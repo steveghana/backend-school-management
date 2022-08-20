@@ -60,45 +60,7 @@ const schoolDetailsSchema = new mongoose.Schema({
   created_by: { type: string, required: true },
   access_code: { type: string, required: true },
   created_at: { default: new Date() },
-
-  resetPasswordToken: String,
-  resetPasswordExpire: Date,
 });
-
-StaffSchema.pre("save", async function (next) {
-  if (!this.isModified("password")) {
-    next();
-  }
-
-  const salt = await bcrypt.genSalt(10);
-  this.password = await bcrypt.hash(this.password, salt);
-  next();
-});
-
-StaffSchema.methods.matchPassword = async function (password) {
-  return await bcrypt.compare(password, this.password);
-};
-
-StaffSchema.methods.getSignedJwtToken = function () {
-  return jwt.sign({ id: this._id }, process.env.SECRET, {
-    expiresIn: "2hrs",
-  });
-};
-
-StaffSchema.methods.getResetPasswordToken = function () {
-  const resetToken = crypto.randomBytes(20).toString("hex");
-
-  // Hash token (private key) and save to database
-  this.resetPasswordToken = crypto
-    .createHash("sha256")
-    .update(resetToken)
-    .digest("hex");
-
-  // Set token expire date
-  this.resetPasswordExpire = Date.now() + 10 * (60 * 1000); // Ten Minutes
-
-  return resetToken;
-};
 
 const Staff = mongoose.model("User", StaffSchema);
 const School = mongoose.model("School", schoolDetailsSchema);
