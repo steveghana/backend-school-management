@@ -1,0 +1,19 @@
+{
+  "name": "backend-school-management",
+  "version": "1.0.0",
+  "description": "A backend for a school management system",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/afyacy/backend-school-management.git"
+  },
+  "author": "Darko Charity/ Steve Williams",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/afyacy/backend-school-management/issues"
+  },
+  "homepage": "https://github.com/afyacy/backend-school-management#readme"
+}
