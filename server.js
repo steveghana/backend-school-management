@@ -1,14 +1,18 @@
 import express from "express";
 import { connectDB } from "./config/db.js";
 import { errorHandler } from "./middleware/error.js";
-import authRouter from "./routes/auth.js";
-import privateRouter from "./routes/private.js";
+import * as schoolRouter from "./api/school/school.router";
+// import privateRouter from "./routes/private.js";
 import dotenv from "dotenv";
 import cors from "cors";
 const app = express();
 dotenv.config();
 connectDB();
-app.use(cors());
+app.use(
+  cors({
+    origin: "*",
+  })
+);
 app.use(express.json());
 
 app.get("/", (req, res, next) => {
@@ -16,9 +20,10 @@ app.get("/", (req, res, next) => {
 });
 
 // Connecting Routes
-app.use("/api/auth", authRouter);
-app.use("/api/private", privateRouter);
+// app.use("/api/auth", authRouter);
+// app.use("/api/private", privateRouter);
 
+app.use("/api/school", schoolRouter);
 // Error Handler Middleware
 app.use(errorHandler);
 

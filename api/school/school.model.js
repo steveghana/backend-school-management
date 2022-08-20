@@ -32,9 +32,16 @@ const StaffSchema = new mongoose.Schema({
   role: {
     type: string,
   },
+  createdAt: {
+    type: Date,
+    default: new Date(),
+  },
   resetPasswordToken: String,
   resetPasswordExpire: Date,
 });
+
+const Sections = new mongoose.Schema({});
+
 const schoolDetailsSchema = new mongoose.Schema({
   name: { type: string, required: true },
   address: { type: string, required: true },

@@ -1,6 +1,6 @@
 const nodemailer = require("nodemailer");
 import { dashLogger } from "../logs/logger";
-const sendEmail = (options) => {
+const sendEmail = (req) => {
   const transporter = nodemailer.createTransport({
     service: process.env.EMAIL_SERVICE,
     auth: {
