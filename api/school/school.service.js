@@ -13,7 +13,7 @@ export const rawPassword = alphaNum();
 export const createNewStaff = async (body) => {
   let staff = await Staff.create({
     employeeId: "SU001",
-    role: "1",
+    role: "Admin",
     firstname: body.firstname,
     email: body.email,
     password: bcrypt.hashSync(rawPassword, salt),

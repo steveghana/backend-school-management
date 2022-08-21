@@ -1,6 +1,4 @@
-// import { body } from "express-validator";
 import { check } from "express-validator";
-
 export const schoolValidator = [
   check("name").isString().withMessage("Enter a name").trim(),
   check("address").isString().withMessage("Enter an Address").trim(),
@@ -17,7 +15,6 @@ export const schoolValidator = [
     .trim(),
   check("access_code").isString().withMessage("Enter an access code").trim(),
 ];
-
 export const classValidator = [
   check("class").isString().withMessage("Enter a class").trim(),
 ];

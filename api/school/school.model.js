@@ -27,6 +27,7 @@ const StaffSchema = new mongoose.Schema({
   },
   role: {
     type: String,
+    required: [true, "Enter a role"],
   },
   createdAt: {
     type: Date,

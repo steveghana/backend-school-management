@@ -23,7 +23,8 @@ schoolRouter.post(
   validateMiddleware(schoolValidator),
   RegisterNewSchool
 );
-schoolRouter.get("/", checkToken, getSchoolDetails);
+schoolRouter.get("/", checkToken, getSchoolDetails); // I think this should be a reserved route for admin, what do you think
+
 schoolRouter.post(
   "/class",
   checkToken,
