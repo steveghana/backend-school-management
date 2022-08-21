@@ -1,5 +1,5 @@
-const nodemailer = require("nodemailer");
-import { dashLogger } from "../logs/logger";
+import nodemailer from "nodemailer";
+// import { dashLogger } from "../logs/logger.js";
 const sendEmail = (req) => {
   const transporter = nodemailer.createTransport({
     service: process.env.EMAIL_SERVICE,
@@ -18,10 +18,10 @@ const sendEmail = (req) => {
 
   transporter.sendMail(mailOptions, function (err, info) {
     if (err) {
-      dashLogger.error(`Error : ${error},Request : ${req.originalUrl}`);
+      // dashLogger.error(`Error : ${error},Request : ${req.originalUrl}`);
       console.log(err);
     } else {
-      dashLogger.info(`Success : ${info.response},Request : SendMail`);
+      // dashLogger.info(`Success : ${info.response},Request : SendMail`);
       console.log(info.response);
     }
   });

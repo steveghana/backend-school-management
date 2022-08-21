@@ -1,196 +1,246 @@
 "use strict";
-const {
-  register,
-  getDetails,
-  createSection,
-  updateSection,
-  getSections,
-  createClass,
-  getClasses,
-} = require("./school.service");
-import { genSaltSync, hashSync } from "bcrypt";
-import { School, Staff } from "./school.model.js";
+import { School, Section, Staff, Class } from "./school.model.js";
 import {
-  alphaNum,
   getEmployeeId,
   createNewStaff,
   creatNewSchool,
   mailData,
-} from "../../utils/Utilities.js";
+} from "./school.service.js";
+import { customStatusMessage } from "../../utils/sharedUtilities.js";
+
+import jwt from "jsonwebtoken";
 import sendEmail from "../../utils/sendEmail.js";
-import { dashLogger } from "../../logs/logger.js";
+// import { dashLogger } from "../../logs/logger.js";
 
 // Register New School
-export const RegisterNewSchool = (req, res, next) => {
-  const { email } = req.body;
+export const RegisterNewSchool = async (req, res) => {
+  const { email, access_code } = req.body;
   try {
-    if (body.access_code !== process.env.ACCESS_CODE) {
-      return res.status(401).json({
-        success: 0,
-        message: "Unauthorized to register school",
-      });
+    if (access_code !== process.env.ACCESS_CODE) {
+      customStatusMessage(
+        res,
+        401,
+        0,
+        "Unauthorized to register school, access code needed"
+      );
+      return;
     }
-    const schoolAlreadyExist = School.findOne({ email });
+    const schoolAlreadyExist = await School.findOne({ email });
     if (schoolAlreadyExist) {
-      return res.status(401).json({
-        success: 0,
-        message: "School Already Exist",
-      });
+      customStatusMessage(res, 401, 0, "School Already Exist");
+      return;
     }
-    const newSchool = creatNewSchool(req.body);
+    const newSchool = await creatNewSchool(req.body);
     if (!newSchool) {
-      return res.status(401).json({
-        success: 0,
-        message: "School registration failed, please try again later",
-      });
+      customStatusMessage(
+        res,
+        401,
+        0,
+        "School registration failed, please try again later"
+      );
+      return;
     }
-    const newStaffMember = createNewStaff();
+    const existingStaffMember = await Staff.findOne({ email });
+    if (existingStaffMember) {
+      customStatusMessage(res, 401, 0, "Staff Member already exist");
+      return;
+    }
+    const newStaffMember = await createNewStaff(req.body);
+
     if (!newStaffMember) {
-      return res.status(401).json({
-        success: 0,
-        message: "Staff registration failed, please try again later",
-      });
+      customStatusMessage(
+        res,
+        401,
+        0,
+        "Staff registration failed, please try again later"
+      );
+      return;
     }
-    sendEmail(mailData(req?.body));// node mailer
-     res.status(200).json({
-      success: 1,
-      message: "Successfully registered",
-      data: { newSchool, newStaffMember }, // should token be added?
-     
+    sendEmail(mailData(req?.body)); // node mailer TO DO
+    const token = await jwt.sign(
+      { employeeid: newStaffMember.employeeId },
+      process.env.SECRET
+      // { expiresIn: "5s" }
+    );
+    customStatusMessage(res, 200, 1, "Successfully registered", {
+      newSchool,
+      newStaffMember,
+      token,
     });
   } catch (error) {
-    dashLogger.error(`Error : ${error},Request : ${req.originalUrl}`);
-     res.status(500).json({
-      success: 0,
-      message: "Database connection error || Data already exists",
-    });
-    next(error)
+    // dashLogger.error(`Error : ${error},Request : ${req.originalUrl}`);
+    customStatusMessage(
+      res,
+      500,
+      0,
+      "Database connection error || Data already exists"
+    );
   }
 };
 
-
-export const getSchoolDetails=(req, res, next)=>{
-    // Get School Details
-const schoolData = await School.find()
-.select('name, address, phone_number, email, logo_small, logo_long')
-try {
-    if(!schoolData){
-        return res.status(401).json({
-            success: 0,
-            message: "Item not found",
-          });
+export const getSchoolDetails = async (req, res, next) => {
+  // Get School Details
+  try {
+    const schoolData = await School.find();
+    if (!schoolData.length) {
+      customStatusMessage(res, 401, 0, "Item not found");
+      return;
     }
-    res.status(200).json({
-        success: 1,
-        data: schoolData,
-      });
-    
-} catch (error) {
-    dashLogger.error(`Error : ${error},Request : ${req.originalUrl}`);
-    res.status(500).json({
-     success: 0,
-     message: "Database connection error || Data already exists",
-   });
-   next()
-}
-}
+    customStatusMessage(res, 200, 1, "Successful", schoolData);
+    return;
+  } catch (error) {
+    // dashLogger.error(`Error : ${error},Request : ${req.originalUrl}`);
+    customStatusMessage(
+      res,
+      500,
+      0,
+      "Database connection error || Data already exists"
+    );
+    next();
+  }
+};
 
 // Create Section
-export const createSection= (req, res) => {
+export const createSection = async (req, res, next) => {
   let token = req.get("authorization");
-  const body = req.body;
-  body.created_by = getEmployeeId(token);
-  createSection(body, (err, results) => {
-    if (err) {
-      console.log(err);
-      dashLogger.error(`Error : ${err},Request : ${req.originalUrl}`);
-      return res.status(500).json({
-        success: 0,
-        message: "Database connection error || Duplication Error",
-      });
+  const { section } = req.body;
+  try {
+    const employeeid = await getEmployeeId(token);
+    if (!employeeid) {
+      customStatusMessage(401, 0, "Invalid employee id");
+      return;
     }
-    return res.status(200).json({
-      success: 1,
-      message: "Successfully created section",
-      data: results,
+    const newSectionAdded = await Section.create({
+      section,
+      created_by: employeeid,
     });
-  });
-}
-module.exports = {
-  
-
-
-  // Update Section
-  updateSection: (req, res) => {
-    let body = req.body;
-    let token = req.get("authorization");
-    body.updated_by = getEmployeeId(token);
-    body.updated_at = new Date().toISOString();
-    updateSection(body, (err, results) => {
-      if (err) {
-        console.log(err);
-        dashLogger.error(`Error : ${err},Request : ${req.originalUrl}`);
-        return res.status(500).json({
-          success: 0,
-          message: "Database connection error || Duplication Error",
-        });
+    newSectionAdded.save();
+    if (!newSectionAdded) {
+      // // dashLogger.error(
+      //   `Error : section wasn't created,Request : ${req.originalUrl}`
+      // );
+      customStatusMessage(res, 402, 0, "Section wasn't added");
+    }
+    customStatusMessage(
+      res,
+      200,
+      1,
+      "Section succesfully created",
+      newSectionAdded
+    );
+  } catch (error) {
+    console.log(error?.message);
+    customStatusMessage(
+      res,
+      500,
+      0,
+      "Database connection error || Duplication Error"
+    );
+    next(error);
+  }
+};
+// Update Section
+export const updateSection = async (req, res, next) => {
+  let { section } = req.body;
+  let token = req.get("authorization");
+  try {
+    let employeeId = await getEmployeeId(token);
+    let updated = await Section.findOneAndUpdate(
+      //query
+      { created_by: employeeId },
+      {
+        //update
+        section,
+        updated_by: employeeId,
+        updated_at: new Date().toISOString(),
       }
-      return res.status(200).json({
-        success: 1,
-        message: "Successfully updated section",
-        data: results,
-      });
-    });
-  },
+    );
+    if (!updated) {
+      // // dashLogger.error(
+      //   `Error : Section couldnt update ,Request : ${req.originalUrl}`
+      // );
+      customStatusMessage(res, 402, 0, "Couldn't updated section");
+      return;
+    }
+    customStatusMessage(res, 200, 1, "Succesfully updated section", updated);
+    return;
+  } catch (error) {
+    customStatusMessage(
+      res,
+      500,
+      0,
+      "Database connection error || Duplication Error"
+    );
+    next(error);
+  }
+};
 
-  // Get Sections
-  getSections: (req, res) => {
-    getSections((err, results) => {
-      if (err) {
-        console.log(err);
-        return;
-      }
-      return res.json({
-        success: 1,
-        data: results,
-      });
-    });
-  },
+// Get Sections
+export const getSections = async (req, res, next) => {
+  const sections = await Section.find({});
+  try {
+    if (!sections.length) {
+      customStatusMessage(res, 401, 0, "Section not found");
+      return;
+    }
+    customStatusMessage(res, 200, 1, "Operation successful", sections);
+  } catch (error) {
+    customStatusMessage(
+      res,
+      500,
+      0,
+      "Database Error || Couldn't connect to database, please try again later"
+    );
+    next(error);
+  }
+};
 
-  // Create class
-  createClass: (req, res) => {
-    let token = req.get("authorization");
-    const body = req.body;
-    body.created_by = getEmployeeId(token);
-    createClass(body, (err, results) => {
-      if (err) {
-        console.log(err);
-        dashLogger.error(`Error : ${err},Request : ${req.originalUrl}`);
-        return res.status(500).json({
-          success: 0,
-          message: "Database Error",
-          data: err,
-        });
-      }
-      return res.status(200).json({
-        success: 1,
-        message: "Successfully created class",
-        data: results,
-      });
+// Create class
+export const createClass = async (req, res, next) => {
+  let token = req.get("authorization");
+  try {
+    const employeeid = await getEmployeeId(token);
+    if (!employeeid) {
+      customStatusMessage(res, 401, 0, "Invalid employee id");
+      return;
+    }
+    const existingClass = await Class.findOne({ class: req.body?.class });
+    if (existingClass) {
+      customStatusMessage(res, 401, 0, "Class Already exist");
+      return;
+    }
+    const classCreated = await Class.create({
+      class: req.body?.class,
+      created_by: "dfd",
     });
-  },
-
-  // Get Classes
-  getClasses: (req, res) => {
-    getClasses((err, results) => {
-      if (err) {
-        console.log(err);
-        return;
-      }
-      return res.json({
-        success: 1,
-        data: results,
-      });
-    });
-  },
+    classCreated.save();
+    if (!classCreated) {
+      // // dashLogger.error(
+      //   `Error : class couldnt be created,Request : ${req.originalUrl}`
+      // );
+      customStatusMessage(res, 402, 0, "Class wasn't created");
+      return;
+    }
+    customStatusMessage(
+      res,
+      200,
+      1,
+      "Class successfully created",
+      classCreated
+    );
+    return;
+  } catch (error) {
+    customStatusMessage(res, 500, 1, "Couldn't connect to database");
+    next(error);
+    return;
+  }
+};
+// Get Classes
+export const getClasses = async (req, res) => {
+  const allClasses = await Class.find({});
+  if (!allClasses.length) {
+    // dashLogger.error(`Error : class not found,Request : ${req.originalUrl}`);
+    customStatusMessage(res, 402, 1, "Class not found ");
+  }
+  customStatusMessage(res, 200, 1, "Operation successful", allClasses);
 };
