@@ -1,0 +1,7 @@
+{"level":"error","message":"Error : Error: ER_BAD_NULL_ERROR: Column 'name' cannot be null,Request : /api/school/class/section"}
+{"level":"error","message":"Error : Error: ER_PARSE_ERROR: You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '?,?,?)' at line 1,Request : /api/school/class/section"}
+{"level":"error","message":"Error : Error: ER_BAD_NULL_ERROR: Column 'class_id' cannot be null,Request : /api/school/class/section"}
+{"level":"error","message":"Error : Error: ER_BAD_FIELD_ERROR: Unknown column 'created_by' in 'field list',Request : /api/school/class/section"}
+{"level":"error","message":"Error : Error: ER_BAD_NULL_ERROR: Column 'section' cannot be null,Request : /api/school/class/section"}
+{"level":"error","message":"Error : Error: ER_DUP_ENTRY: Duplicate entry 'SU001' for key 'employee_id',Request : /api/school"}
+{"level":"error","message":"Error : Error: ER_BAD_NULL_ERROR: Column 'section' cannot be null,Request : /api/school/class/section"}

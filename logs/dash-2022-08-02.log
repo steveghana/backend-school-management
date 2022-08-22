@@ -1,0 +1,8 @@
+{"level":"error","message":"Error : Error: ER_DUP_ENTRY: Duplicate entry 'SU001' for key 'employee_id',Request : /api/school"}
+{"level":"error","message":"Success : 250 2.0.0 OK  1659431859 m12-20020a056000008c00b0021eaf4138aesm16943643wrx.108 - gsmtp,Request : undefined"}
+{"level":"error","message":"Error : Error: ER_DUP_ENTRY: Duplicate entry 'SU001' for key 'employee_id',Request : /api/school"}
+{"level":"error","message":"Success : 250 2.0.0 OK  1659431988 k33-20020a05600c1ca100b003a4ef39b8f3sm1112084wms.18 - gsmtp,Request : undefined"}
+{"level":"error","message":"Error : Error: ER_DUP_ENTRY: Duplicate entry 'SU001' for key 'employee_id',Request : /api/school"}
+{"level":"info","message":"Success : 250 2.0.0 OK  1659432114 n40-20020a05600c3ba800b003a2ed2a40e4sm23797945wms.17 - gsmtp,Request : undefined"}
+{"level":"info","message":"Success : 250 2.0.0 OK  1659432181 f19-20020adfb613000000b0021e13efa17esm14255591wre.70 - gsmtp,Request : SendMail"}
+{"level":"info","message":"Success : 250 2.0.0 OK  1659433048 d7-20020a1c7307000000b003a3211112f8sm17566549wmb.46 - gsmtp,Request : SendMail"}
