@@ -25,10 +25,8 @@ const StaffSchema = new mongoose.Schema({
   },
   password: {
     type: String,
-    default: "Not provided",
     required: [true, "Please add a password"],
     minlength: 6,
-    select: false,
   },
   role: {
     type: String,
@@ -95,7 +93,7 @@ const StaffSchema = new mongoose.Schema({
   Local_Address: {
     type: String,
     default: "Not provided",
-    required: true,
+    required: [true, "Provide an address"],
   },
   Permanent_Address: {
     type: String,
@@ -162,7 +160,7 @@ const StaffSchema = new mongoose.Schema({
     default: "Not provided",
   },
   SSNIT_Number: {
-    type: Number,
+    type: String,
     default: "Not provided",
   },
   Facebook: {
@@ -207,7 +205,7 @@ const StaffSchema = new mongoose.Schema({
   },
   created_By: {
     type: String,
-    required: true,
+    required: [true, "Name required"],
   },
   updated_By: {
     type: String,

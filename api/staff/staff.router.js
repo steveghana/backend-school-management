@@ -1,15 +1,28 @@
 import {
-  createStaff,
-  getStaffs,
+  RegisterStaff,
+  StaffLogin,
   getStaffByEmployeeId,
-  login,
-} from "./staff.controller";
+  getStaffInfos,
+} from "./staff.controller.js";
 import express from "express";
-import { checkToken } from "../../auth/token_validation";
+import { staffValidator, staffLoginValidator } from "./staff.validator.js";
+import { validateMiddleware } from "../../middleware/validation.js";
+import { checkToken } from "../../middleware/checkToken.js";
 const staffRouter = express.Router();
-staffRouter.post("/", checkToken, createStaff);
-staffRouter.get("/", checkToken, getStaffs);
+staffRouter.post(
+  "/",
+  checkToken,
+  staffValidator,
+  validateMiddleware(staffValidator),
+  RegisterStaff
+);
+staffRouter.get("/", checkToken, getStaffInfos);
 staffRouter.get("/:id", checkToken, getStaffByEmployeeId);
-staffRouter.post("/login", login);
+staffRouter.post(
+  "/login",
+  staffLoginValidator,
+  validateMiddleware(staffLoginValidator),
+  StaffLogin
+);
 
 export default staffRouter;

@@ -11,7 +11,7 @@ import { customStatusMessage } from "../../utils/sharedUtilities.js";
 
 import jwt from "jsonwebtoken";
 import sendEmail from "../../utils/sendEmail.js";
-// import { dashLogger } from "../../logs/logger.js";
+import { dashLogger } from "../../logs/logger.js";
 
 // Register New School
 export const RegisterNewSchool = async (req, res) => {
@@ -69,7 +69,7 @@ export const RegisterNewSchool = async (req, res) => {
       token,
     });
   } catch (error) {
-    // dashLogger.error(`Error : ${error},Request : ${req.originalUrl}`);
+    dashLogger.error(`Error : ${error},Request : ${req.originalUrl}`);
     customStatusMessage(
       res,
       500,
@@ -90,7 +90,7 @@ export const getSchoolDetails = async (req, res, next) => {
     customStatusMessage(res, 200, 1, "Successful", schoolData);
     return;
   } catch (error) {
-    // dashLogger.error(`Error : ${error},Request : ${req.originalUrl}`);
+    dashLogger.error(`Error : ${error.message},Request : ${req.originalUrl}`);
     customStatusMessage(
       res,
       500,
@@ -117,9 +117,9 @@ export const createSection = async (req, res, next) => {
     });
     newSectionAdded.save();
     if (!newSectionAdded) {
-      // // dashLogger.error(
-      //   `Error : section wasn't created,Request : ${req.originalUrl}`
-      // );
+      dashLogger.error(
+        `Error : section wasn't created,Request : ${req.originalUrl}`
+      );
       customStatusMessage(res, 402, 0, "Section wasn't added");
     }
     customStatusMessage(
@@ -157,9 +157,9 @@ export const updateSection = async (req, res, next) => {
       }
     );
     if (!updated) {
-      // // dashLogger.error(
-      //   `Error : Section couldnt update ,Request : ${req.originalUrl}`
-      // );
+      dashLogger.error(
+        `Error : Section couldnt update ,Request : ${req.originalUrl}`
+      );
       customStatusMessage(res, 402, 0, "Couldn't updated section");
       return;
     }
@@ -216,9 +216,9 @@ export const createClass = async (req, res, next) => {
     });
     classCreated.save();
     if (!classCreated) {
-      // // dashLogger.error(
-      //   `Error : class couldnt be created,Request : ${req.originalUrl}`
-      // );
+      dashLogger.error(
+        `Error : class couldnt be created,Request : ${req.originalUrl}`
+      );
       customStatusMessage(res, 402, 0, "Class wasn't created");
       return;
     }
@@ -240,7 +240,7 @@ export const createClass = async (req, res, next) => {
 export const getClasses = async (req, res) => {
   const allClasses = await Class.find({});
   if (!allClasses.length) {
-    // dashLogger.error(`Error : class not found,Request : ${req.originalUrl}`);
+    dashLogger.error(`Error : class not found,Request : ${req.originalUrl}`);
     customStatusMessage(res, 402, 1, "Class not found ");
   }
   customStatusMessage(res, 200, 1, "Operation successful", allClasses);
