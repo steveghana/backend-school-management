@@ -1,5 +1,6 @@
 "use strict";
-import { School, Section, Staff, Class } from "./school.model.js";
+import { School, Section, Class } from "./school.model.js";
+import { Staff } from "../staff/staff.model.js";
 import {
   getEmployeeId,
   createNewStaff,
