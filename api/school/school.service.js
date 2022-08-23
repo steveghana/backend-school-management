@@ -16,7 +16,9 @@ export const createNewStaff = async (body) => {
     role: "Admin",
     firstname: body.firstname,
     email: body.email,
+    contact_Number: body.contact_Number,
     password: bcrypt.hashSync(rawPassword, salt),
+    created_By: "SU001",
     createdAt: Date.now(),
   });
   staff.save();
@@ -41,7 +43,7 @@ export const creatNewSchool = async (body) => {
     email,
     logo_small,
     logo_long,
-    created_by,
+    created_by: "SU001",
     access_code,
     created_at: Date.now(),
   });

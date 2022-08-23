@@ -26,6 +26,16 @@ export const RegisterNewSchool = async (req, res) => {
       );
       return;
     }
+    const doesSchoolExist = await School.find({});
+    if (doesSchoolExist.length) {
+      customStatusMessage(
+        res,
+        401,
+        0,
+        "Only a single school can be registered"
+      );
+      return;
+    }
     const schoolAlreadyExist = await School.findOne({ email });
     if (schoolAlreadyExist) {
       customStatusMessage(res, 401, 0, "School Already Exist");
