@@ -1,14 +1,14 @@
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
-import { School, Staff } from "./school.model.js";
-
+import { School } from "./school.model.js";
+import { Staff } from "../staff/staff.model.js";
+import { salt } from "../../utils/sharedUtilities.js";
 export const getEmployeeId = async (req) => {
   let token = req.slice(6);
   var decoded = jwt.decode(token);
   return decoded?.employeeid;
 };
 export const alphaNum = () => Math.random().toString(36).replace("0.", "");
-export const salt = bcrypt.genSaltSync(10);
 export const rawPassword = alphaNum();
 export const createNewStaff = async (body) => {
   let staff = await Staff.create({

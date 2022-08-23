@@ -1,10 +1,28 @@
-const { createStaff, getStaffs, getStaffByEmployeeId, login } = require("./staff.controller");
-const router = require("express").Router();
-const { checkToken } = require("../../auth/token_validation")
+import {
+  RegisterStaff,
+  StaffLogin,
+  getStaffByEmployeeId,
+  getStaffInfos,
+} from "./staff.controller.js";
+import express from "express";
+import { staffValidator, staffLoginValidator } from "./staff.validator.js";
+import { validateMiddleware } from "../../middleware/validation.js";
+import { checkToken } from "../../middleware/checkToken.js";
+const staffRouter = express.Router();
+staffRouter.post(
+  "/",
+  checkToken,
+  staffValidator,
+  validateMiddleware(staffValidator),
+  RegisterStaff
+);
+staffRouter.get("/", checkToken, getStaffInfos);
+staffRouter.get("/:id", checkToken, getStaffByEmployeeId);
+staffRouter.post(
+  "/login",
+  staffLoginValidator,
+  validateMiddleware(staffLoginValidator),
+  StaffLogin
+);
 
-router.post("/", checkToken, createStaff);
-router.get("/",  checkToken, getStaffs);
-router.get("/:id",  checkToken, getStaffByEmployeeId)
-router.post("/login", login)
-
-module.exports = router;
+export default staffRouter;

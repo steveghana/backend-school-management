@@ -2,6 +2,7 @@ import express from "express";
 import { connectDB } from "./config/db.js";
 import { errorHandler } from "./middleware/error.js";
 import schoolRouter from "./api/school/school.router.js";
+import staffRouter from "./api/staff/staff.router.js";
 import logger from "morgan";
 import dotenv from "dotenv";
 import cors from "cors";
@@ -20,6 +21,7 @@ app.get("/", (req, res) => res.send("Api running"));
 app.use(logger("dev"));
 // Connecting Routes
 app.use("/api/school", schoolRouter);
+app.use("/api/staff", staffRouter);
 // Error Handler Middleware
 app.use(errorHandler);
 

@@ -1,57 +1,19 @@
-const pool = require("../../config/database");
-
-module.exports = {
-    create: (data, callBack) => {
-        pool.query(
-            `insert into staff(firstname, lastname, employee_id, password) values(?,?,?,?)`,
-            [
-                data.firstname,
-                data.lastname,
-                data.employee_id,
-                data.password
-            ],
-            (error, results, fields) => {
-                if (error) {
-                    return callBack(error)
-                }
-                return callBack(null, results)
-            }
-        )
-    },
-    getStaffs: callBack => {
-        pool.query(
-            `select employee_id, firstname, lastname from staff`,
-            [],
-        (error, results, fields) => {
-            if (error) {
-                return callBack(error)
-            }
-            return callBack(null, results)
-        }
-        )
-    },
-    getStaffByEmployeeId: (id, callBack) => {
-        pool.query(
-            `select employee_id, firstname, lastname from staff where employee_id =?`,
-            [id],
-        (error, results, fields) => {
-            if (error) {
-                return callBack(error)
-            }
-            return callBack(null, results[0])
-        }
-        )
-    },
-    getStaffByEmployeeEmail: (email, callBack) => {
-        pool.query(
-            `select * from staff where email  = ?`,
-            [email],
-        (error, results, fields) => {
-            if (error) {
-                return callBack(error)
-            }
-            return callBack(null, results[0])
-        }
-        )
-    }
-}
+// const pool = require("../../config/database");
+import { Staff } from "./staff.model.js";
+import bcrypt from "bcryptjs";
+import Shortid from "shortid";
+import { salt } from "../../utils/sharedUtilities.js";
+export const createNewStaff = async (body) => {
+  let staff = await Staff.create({
+    employeeId: Shortid(),
+    role: body.role,
+    firstname: body.firstname,
+    contact_Number: body.contact_number,
+    email: body.email,
+    created_By: body.created_By,
+    password: bcrypt.hashSync(body.password, salt),
+    createdAt: Date.now(),
+  });
+  staff.save();
+  return staff;
+};
