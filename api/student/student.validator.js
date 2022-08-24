@@ -1,8 +1,8 @@
 import { check } from "express-validator";
-export const staffValidator = [
-  check("firstName").isString().withMessage("Enter a first Name").trim(),
+export const studentValidator = [
+  check("firstname").isString().withMessage("Enter a first Name").trim(),
   check("localAddress").isString().withMessage("Enter an Address").trim(),
-  check("contact_Number")
+  check("contact_number")
     .isString()
     .withMessage("Enter a phone number")
     .isLength({ min: 10, max: 20 })
@@ -20,10 +20,10 @@ export const staffValidator = [
     .withMessage("Password number must be at least 5 characters long")
     .trim(),
   check("role").isString().withMessage("Enter a role").trim(),
-  // check("created_By").isString().withMessage("Enter admin credentials").trim(),
+  check("created_By").isString().withMessage("Enter a name").trim(),
 ];
 
-export const staffLoginValidator = [
+export const studentLoginValidator = [
   check("email")
     .isEmail()
     .isString()

@@ -3,6 +3,9 @@ import {
   StaffLogin,
   getStaffByEmployeeId,
   getStaffInfos,
+  updateSection,
+  getIndividualStaffInfo,
+  deletStaff,
 } from "./staff.controller.js";
 import express from "express";
 import { staffValidator, staffLoginValidator } from "./staff.validator.js";
@@ -24,5 +27,13 @@ staffRouter.post(
   validateMiddleware(staffLoginValidator),
   StaffLogin
 );
-
+staffRouter.patch("/staffinfo/update", checkToken, updateSection);
+staffRouter.post(
+  "/staffinfo/delete",
+  checkToken,
+  staffValidator,
+  validateMiddleware(staffValidator),
+  deletStaff
+);
+staffRouter.post("/staffinfo/info", checkToken, getIndividualStaffInfo);
 export default staffRouter;
