@@ -5,7 +5,9 @@ import {
   getStaffInfos,
   updateSection,
   getIndividualStaffInfo,
-  deletStaff,
+  deleteStaff,
+  ForgotPassword,
+  ResetPassword,
 } from "./staff.controller.js";
 import express from "express";
 import { staffValidator, staffLoginValidator } from "./staff.validator.js";
@@ -21,19 +23,22 @@ staffRouter.post(
 );
 staffRouter.get("/", checkToken, getStaffInfos);
 staffRouter.get("/:id", checkToken, getStaffByEmployeeId);
-staffRouter.post(
-  "/login",
-  staffLoginValidator,
-  validateMiddleware(staffLoginValidator),
-  StaffLogin
-);
 staffRouter.patch("/staffinfo/update", checkToken, updateSection);
 staffRouter.post(
   "/staffinfo/delete",
   checkToken,
   staffValidator,
   validateMiddleware(staffValidator),
-  deletStaff
+  deleteStaff
 );
 staffRouter.post("/staffinfo/info", checkToken, getIndividualStaffInfo);
+staffRouter.post(
+  "/login",
+  staffLoginValidator,
+  validateMiddleware(staffLoginValidator),
+  StaffLogin
+);
+staffRouter.post("/forgotpassword", ForgotPassword);
+// Remember to pass the url as params
+staffRouter.patch("/passwordreset/:resetToken", ResetPassword);
 export default staffRouter;

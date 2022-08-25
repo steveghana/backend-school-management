@@ -1,17 +1,20 @@
 import { createNewStaff, getEmployeeId } from "./staff.service.js";
 import bcrypt from "bcryptjs";
+import sendEmail from "../../utils/sendEmail.js";
+import { salt } from "../../utils/sharedUtilities.js";
 import jwt from "jsonwebtoken";
 import { customStatusMessage } from "../../utils/sharedUtilities.js";
 import { dashLogger } from "../../logs/logger.js";
 import { Staff } from "./staff.model.js";
 export const RegisterStaff = async (req, res, next) => {
-  const { firstname, lastName, contact_Number, email } = req.body;
+  const { firstName, lastName, contact_Number, email, role, password } =
+    req.body;
   let token = req.get("authorization");
 
   let employeeId = await getEmployeeId(token);
   try {
-    const { role } = await Staff.findOne({ employeeId }).select("role");
-    if (role !== "Admin") {
+    const staff = await Staff.findOne({ employeeId }).select("role");
+    if (staff.role !== "Admin") {
       customStatusMessage(
         res,
         401,
@@ -24,7 +27,7 @@ export const RegisterStaff = async (req, res, next) => {
       email,
     });
     const existingStaffMember = await Staff.findOne({
-      firstname,
+      firstName,
       lastName,
       contact_Number,
     });
@@ -33,7 +36,7 @@ export const RegisterStaff = async (req, res, next) => {
       return;
     }
 
-    const newStaffMember = createNewStaff(req.body, employeeId);
+    const newStaffMember = await createNewStaff(req.body, employeeId);
     if (!newStaffMember) {
       customStatusMessage(
         res,
@@ -44,9 +47,9 @@ export const RegisterStaff = async (req, res, next) => {
       return;
     }
     customStatusMessage(res, 200, 1, "Staff registered successfully", {
-      firstname,
+      firstName,
       lastName,
-      employeeId,
+      employeeid: newStaffMember.employeeId,
       role,
     });
     return;
@@ -115,45 +118,6 @@ export const getStaffByEmployeeId = async (req, res, next) => {
   }
 };
 
-export const StaffLogin = async (req, res, next) => {
-  let { email, password } = req.body;
-  try {
-    let ExistinStaff = await Staff.find({ email });
-    if (!ExistinStaff) {
-      customStatusMessage(res, 401, "Invalid email or password");
-      return;
-    }
-    const DoPasswordMatch = bcrypt.compareSync(
-      password,
-      ExistinStaff[0].password
-    );
-    if (!DoPasswordMatch) {
-      customStatusMessage(res, 401, 0, "Invalid password");
-      return;
-    }
-    const token = await jwt.sign(
-      { result: ExistinStaff?.password },
-      process.env.SECRET,
-      { expiresIn: "24hr" }
-    );
-    customStatusMessage(res, 200, 1, "Login successful", {
-      token,
-      id: ExistinStaff[0].employeeId,
-      name: ExistinStaff[0].firstName,
-      lastName: ExistinStaff[0].lastName,
-      Email: ExistinStaff[0].email,
-    });
-    return;
-  } catch (error) {
-    customStatusMessage(
-      res,
-      500,
-      0,
-      "Database connection error || Data already exists"
-    );
-    next(error);
-  }
-};
 //Get individual StaffInfo only admin credentials needed
 export const getIndividualStaffInfo = async (req, res, next) => {
   let { firstname, lastName, role } = req.body;
@@ -239,7 +203,7 @@ export const updateSection = async (req, res, next) => {
     next(error);
   }
 };
-export const deletStaff = async (req, res, next) => {
+export const deleteStaff = async (req, res, next) => {
   let { body } = req;
   let token = req.get("authorization");
 
@@ -274,5 +238,138 @@ export const deletStaff = async (req, res, next) => {
       "Database connection error || Data already exists"
     );
     next(error);
+  }
+};
+//Authentication
+export const StaffLogin = async (req, res, next) => {
+  let { email, password } = req.body;
+  try {
+    let ExistinStaff = await Staff.findOne({ email });
+    if (!ExistinStaff) {
+      customStatusMessage(res, 401, "Invalid email or password");
+      return;
+    }
+    const DoPasswordMatch = ExistinStaff.matchPassword(ExistinStaff.password);
+    if (!DoPasswordMatch) {
+      customStatusMessage(res, 401, 0, "Invalid password");
+      return;
+    }
+    console.log(ExistinStaff.employeeId);
+    const token = await jwt.sign(
+      { id: ExistinStaff?.employeeId },
+      process.env.SECRET
+      // { expiresIn: "24hrs" }
+    );
+    customStatusMessage(res, 200, 1, "Login successful", {
+      token,
+      id: ExistinStaff.employeeId,
+      name: ExistinStaff.firstName,
+      lastName: ExistinStaff.lastName,
+      Email: ExistinStaff.email,
+    });
+    return;
+  } catch (error) {
+    dashLogger.error(`Error : ${error.message},Request : ${req.originalUrl}`);
+    customStatusMessage(
+      res,
+      500,
+      0,
+      "Database connection error || Data already exists"
+    );
+    next(error);
+  }
+};
+
+export const ForgotPassword = async (req, res, next) => {
+  // Send Email to email provided but first check if Staff exists
+  const { email } = req.body;
+  try {
+    const staff = await Staff.findOne({ email });
+    if (!staff) {
+      customStatusMessage(
+        res,
+        401,
+        0,
+        "Invalid Email address, password reset failed"
+      );
+      return;
+    }
+    // Reset Token Gen and add to database hashed (private) version of token
+    const resetToken = staff.getResetPasswordToken();
+    await staff.save();
+    // Create reset url to email to provided email
+    const resetUrl = `http://localhost:3000/passwordreset/${resetToken}`;
+    // HTML Message
+    const message = `
+      <h1>${staff.firstName} have requested a password reset</h1>
+      <p>Please click following link to reset your password:</p>
+      <a href=${resetUrl} clicktracking=off>${resetUrl}</a>
+    `;
+    const sent = sendEmail({
+      email: staff.email,
+      subject: "Password Reset Request",
+      text: message,
+    });
+    if (!sent) {
+      customStatusMessage(
+        res,
+        401,
+        0,
+        "Couldnt send email, please try again later"
+      );
+      staff.resetPasswordToken = undefined;
+      staff.resetPasswordExpire = undefined;
+      await staff.save();
+      return;
+    }
+    customStatusMessage(res, 200, 1, "Email Sent");
+    return;
+  } catch (err) {
+    dashLogger.error(`Error : ${error.message},Request : ${req.originalUrl}`);
+    customStatusMessage(
+      res,
+      500,
+      0,
+      "Database connection error || Data already exists"
+    );
+    next(err);
+  }
+};
+//Forgot password controller
+export const ResetPassword = async (req, res, next) => {
+  // Check if the getResetPassword token generated and added to field exist and is inded the user
+  const resetPasswordToken = crypto
+    .createHash("sha256")
+    .update(req.params.resetToken)
+    .digest("hex");
+  try {
+    const staff = await Staff.findOne({
+      resetPasswordToken,
+      resetPasswordExpire: { $gt: Date.now() },
+    });
+    if (!staff) {
+      customStatusMessage(res, 401, 0, "Invalid token");
+      return;
+    }
+    staff.password = bcrypt.hashSync(req.body.password, salt);
+    staff.resetPasswordToken = undefined;
+    staff.resetPasswordExpire = undefined;
+
+    await staff.save();
+    const token = await jwt.sign(
+      { id: staff?.employeeId },
+      process.env.SECRET,
+      { expiresIn: "24hrs" }
+    );
+    customStatusMessage(res, 200, 1, "Password updated succesfully", token);
+  } catch (error) {
+    dashLogger.error(`Error : ${error.message},Request : ${req.originalUrl}`);
+    customStatusMessage(
+      res,
+      500,
+      0,
+      "Database connection error || Data already exists"
+    );
+    next(err);
   }
 };
