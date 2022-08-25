@@ -196,7 +196,7 @@ export const updateStudentInfo = async (req, res, next) => {
 
 export const getStudentsByAdmissionClass = async (req, res, next) => {
   const { classOfStudents } = req.body;
-  console.log(classOfStudents);
+
   try {
     const allStudentsInClass = await Student.find({ Class: classOfStudents }); //Filter on frontend
     if (!allStudentsInClass) {

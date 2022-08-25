@@ -2,6 +2,7 @@ import express from "express";
 import { connectDB } from "./config/db.js";
 import { errorHandler } from "./middleware/error.js";
 import schoolRouter from "./api/school/school.router.js";
+import StudentLoggRouter from "./api/StudentsAttendance/Attendance.router.js";
 import staffRouter from "./api/staff/staff.router.js";
 import StaffLoggRouter from "./api/StaffAttendance/Attendance.router.js";
 import StudentRouter from "./api/student/student.router.js";
@@ -26,6 +27,7 @@ app.use("/api/school", schoolRouter);
 app.use("/api/staff", staffRouter);
 app.use("/api/student", StudentRouter);
 app.use("/api/stafflogs", StaffLoggRouter);
+app.use("/api/studentlogs", StudentLoggRouter);
 // Error Handler Middleware
 app.use(errorHandler);
 const server = app.listen(PORT, () =>

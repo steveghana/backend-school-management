@@ -1,0 +1,4 @@
+{"level":"error","message":"Error : logStaffAttendance is not defined,Request : /api/studentlogs"}
+{"level":"error","message":"Error : StaffAttendance is not defined,Request : /api/studentlogs"}
+{"level":"error","message":"Error : inserted is not defined,Request : /api/studentlogs"}
+{"level":"error","message":"Error : StaffAttendance is not defined,Request : /api/studentlogs"}
