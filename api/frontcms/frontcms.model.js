@@ -1,2 +1,2 @@
-import mongoose from "mongoose";
-const frontCmsSchema = new mongoose.Schema({});
+// import mongoose from "mongoose";
+// const frontCmsSchema = new mongoose.Schema({});
