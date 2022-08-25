@@ -5,9 +5,11 @@ import { dashLogger } from "../../logs/logger.js";
 import { createNewStudent, getEmployeeId } from "./student.service.js";
 export const RegisterStudent = async (req, res, next) => {
   const { firstName, Class, lastName, town, guardian, gender } = req.body;
+  // Make sure all names are in lowerCase to avoid collision
   /* Problem!
-  How do you we generated a new Admission number from the potential pretora of numbers to avoid duplicate collision
+  How do you we generate a new Admission number from the potential pretora of numbers to avoid duplicate collision
   Just a simple Math.random() with range wont even work here.
+  I think we should use an id not a number
   */
   let token = req.get("authorization");
   let employeeId = await getEmployeeId(token);
