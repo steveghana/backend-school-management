@@ -1,33 +1,11 @@
 import { check } from "express-validator";
 export const studentValidator = [
-  check("firstname").isString().withMessage("Enter a first Name").trim(),
+  check("firstName").isString().withMessage("Enter a first Name").trim(),
   check("localAddress").isString().withMessage("Enter an Address").trim(),
-  check("contact_number")
-    .isString()
-    .withMessage("Enter a phone number")
-    .isLength({ min: 10, max: 20 })
-    .withMessage("Phone number must be at least 10 characters long")
-    .trim(),
-  check("email")
-    .isEmail()
-    .isString()
-    .withMessage("Enter a valid email address")
-    .trim(),
-  check("password")
-    .isString()
-    .withMessage("Enter a password")
-    .isLength({ min: 5, max: 20 })
-    .withMessage("Password number must be at least 5 characters long")
-    .trim(),
-  check("role").isString().withMessage("Enter a role").trim(),
-  check("created_By").isString().withMessage("Enter a name").trim(),
-];
-
-export const studentLoginValidator = [
-  check("email")
-    .isEmail()
-    .isString()
-    .withMessage("Enter a valid email address")
-    .trim(),
-  check("password").isString().withMessage("Enter a password").trim(),
+  check("lastName").isString().withMessage("Enter your last name").trim(),
+  check("town").isString().withMessage("Enter a Town").trim(),
+  check("city").isString().withMessage("Enter a city").trim(),
+  check("guardian").isString().withMessage("Enter a guardian Name").trim(),
+  check("gender").isString().withMessage("Enter a gender").trim(),
+  check("Class").isString().withMessage("Enter the class of student").trim(),
 ];

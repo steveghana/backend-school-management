@@ -1,7 +1,10 @@
 import {
   RegisterStudent,
-  getStudentByAdmissionNO,
+  deleteStudent,
+  getStudentByUniqueCredentials,
   getStudentInfos,
+  getStudentsByAdmissionClass,
+  updateStudentInfo,
 } from "./student.controller.js";
 import express from "express";
 import { studentValidator } from "./student.validator.js";
@@ -16,12 +19,20 @@ StudentRouter.post(
   RegisterStudent
 );
 StudentRouter.get("/", checkToken, getStudentInfos);
-StudentRouter.get("/:id", checkToken, getStudentByAdmissionNO);
-//   StudentRouter.post(
-//     "/login",
-//     staffLoginValidator,
-//     validateMiddleware(staffLoginValidator),
-//     StaffLogin
-//   );
+StudentRouter.get("/studentinfo", checkToken, getStudentByUniqueCredentials);
+StudentRouter.patch("/studentinfo/update", checkToken, updateStudentInfo);
+StudentRouter.post(
+  "/studentinfo/delete",
+  checkToken,
+  studentValidator,
+  validateMiddleware(studentValidator),
+  deleteStudent
+);
+StudentRouter.get("/studentinfo/infos", checkToken, getStudentInfos);
+StudentRouter.get(
+  "/studentinfo/class",
+  checkToken,
+  getStudentsByAdmissionClass
+);
 
 export default StudentRouter;

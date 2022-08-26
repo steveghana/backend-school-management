@@ -1,8 +1,0 @@
-{"level":"error","message":"Error : Error: ER_BAD_NULL_ERROR: Column 'section' cannot be null,Request : /api/school/class/section"}
-{"level":"error","message":"Error : Error: ER_BAD_NULL_ERROR: Column 'section' cannot be null,Request : /api/school/class/section"}
-{"level":"error","message":"Error : Error: ER_BAD_NULL_ERROR: Column 'section' cannot be null,Request : /api/school/class/section"}
-{"level":"error","message":"Error : Error: ER_BAD_NULL_ERROR: Column 'section' cannot be null,Request : /api/school/class/section"}
-{"level":"error","message":"Error : Error: ER_BAD_NULL_ERROR: Column 'section' cannot be null,Request : /api/school/class/section"}
-{"level":"error","message":"Error : Error: ER_DUP_ENTRY: Duplicate entry 'A' for key 'section',Request : /api/school/class/section"}
-{"level":"error","message":"Error : Error: ER_BAD_FIELD_ERROR: Unknown column 'class_id' in 'field list',Request : /api/school/class"}
-{"level":"error","message":"Error : Error: ER_DUP_ENTRY: Duplicate entry 'one' for key 'class',Request : /api/school/class"}

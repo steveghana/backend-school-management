@@ -8,11 +8,9 @@ import {
   mailData,
 } from "./school.service.js";
 import { customStatusMessage } from "../../utils/sharedUtilities.js";
-
 import jwt from "jsonwebtoken";
 import sendEmail from "../../utils/sendEmail.js";
 import { dashLogger } from "../../logs/logger.js";
-
 // Register New School
 export const RegisterNewSchool = async (req, res) => {
   const { email, access_code } = req.body;

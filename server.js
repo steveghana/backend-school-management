@@ -3,6 +3,7 @@ import { connectDB } from "./config/db.js";
 import { errorHandler } from "./middleware/error.js";
 import schoolRouter from "./api/school/school.router.js";
 import staffRouter from "./api/staff/staff.router.js";
+import StudentRouter from "./api/student/student.router.js";
 import logger from "morgan";
 import dotenv from "dotenv";
 import cors from "cors";
@@ -22,6 +23,7 @@ app.use(logger("dev"));
 // Connecting Routes
 app.use("/api/school", schoolRouter);
 app.use("/api/staff", staffRouter);
+app.use("/api/student", StudentRouter);
 // Error Handler Middleware
 app.use(errorHandler);
 
