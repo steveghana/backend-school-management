@@ -40,5 +40,6 @@ staffRouter.post(
 );
 staffRouter.post("/forgotpassword", ForgotPassword);
 // Remember to pass the url as params
+
 staffRouter.patch("/passwordreset/:resetToken", ResetPassword);
 export default staffRouter;
