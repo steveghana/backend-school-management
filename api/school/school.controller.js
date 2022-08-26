@@ -69,7 +69,7 @@ export const RegisterNewSchool = async (req, res) => {
     const token = await jwt.sign(
       { employeeid: newStaffMember.employeeId },
       process.env.SECRET
-      // { expiresIn: "5s" }
+      // { expiresIn: "24hrs" }
     );
     customStatusMessage(res, 200, 1, "Successfully registered", {
       newSchool,

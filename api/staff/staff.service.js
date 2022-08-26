@@ -18,5 +18,5 @@ export const createNewStaff = async (body, employeeId) => {
 export const getEmployeeId = async (req) => {
   let token = req.slice(6);
   var decoded = jwt.decode(token);
-  return decoded?.employeeid;
+  return decoded?.id;
 };
