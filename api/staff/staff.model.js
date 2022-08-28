@@ -13,7 +13,15 @@ const StaffSchema = new mongoose.Schema({
     default: "Not provided",
     required: [true, "Please provide firstname"],
   },
+  middleName: {
+    type: String,
+    default: "Not provided",
+  },
   lastName: {
+    type: String,
+    default: "Not provided",
+  },
+  ClassAssigned: {
     type: String,
     default: "Not provided",
   },
