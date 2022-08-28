@@ -42,6 +42,11 @@ const StaffSchema = new mongoose.Schema({
     default: "Not provided",
     required: [true, "Enter a role"],
   },
+  ClassAssigned: {
+    type: String,
+    default: "Not provided",
+    required: [true, "Enter a role"],
+  },
   createdAt: {
     type: Date,
     default: new Date(),
