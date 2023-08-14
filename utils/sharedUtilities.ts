@@ -1,8 +1,9 @@
 //For all status code and custom messages
 import bcrypt from "bcryptjs";
+import { Response } from "express";
 export const customStatusMessage = (
-  res,
-  statusCode,
+  res: Response,
+  statusCode: number,
   success,
   message,
   data = null

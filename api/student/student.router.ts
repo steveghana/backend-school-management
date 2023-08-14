@@ -5,11 +5,11 @@ import {
   getStudentInfos,
   getStudentsByAdmissionClass,
   updateStudentInfo,
-} from "./student.controller.js";
+} from "./student.controller.ts";
 import express from "express";
-import { studentValidator } from "./student.validator.js";
-import { validateMiddleware } from "../../middleware/validation.js";
-import { checkToken } from "../../middleware/checkToken.js";
+import { studentValidator } from "./student.validator.ts";
+import { validateMiddleware } from "../../middleware/validation.ts";
+import { checkToken } from "../../middleware/checkToken.ts";
 const StudentRouter = express.Router();
 StudentRouter.post(
   "/",

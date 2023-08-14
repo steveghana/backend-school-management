@@ -1,16 +1,16 @@
 "use strict";
-import { School, Section, Class } from "./school.model.js";
-import { Staff } from "../staff/staff.model.js";
+import { School, Section, Class } from "./school.model.ts";
+import { Staff } from "../staff/staff.model.ts";
 import {
   getEmployeeId,
   createNewStaff,
   creatNewSchool,
   mailData,
-} from "./school.service.js";
-import { customStatusMessage } from "../../utils/sharedUtilities.js";
+} from "./school.service.ts";
+import { customStatusMessage } from "../../utils/sharedUtilities.ts";
 import jwt from "jsonwebtoken";
-import sendEmail from "../../utils/sendEmail.js";
-import { dashLogger } from "../../logs/logger.js";
+import sendEmail from "../../utils/sendEmail.ts";
+import { dashLogger } from "../../logs/logger.ts";
 // Register New School
 export const RegisterNewSchool = async (req, res) => {
   const { email, access_code } = req.body;

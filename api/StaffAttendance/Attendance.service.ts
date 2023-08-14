@@ -1,4 +1,4 @@
-import { StaffAttendance } from "./Attendance.model.js";
+import { StaffAttendance } from "./Attendance.model.ts";
 export const logStaffAttendance = async (body, theDate) => {
   let loggedStaff = await StaffAttendance.updateOne(
     { date: theDate },

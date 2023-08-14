@@ -1,8 +1,8 @@
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
-import { School } from "./school.model.js";
-import { Staff } from "../staff/staff.model.js";
-import { salt } from "../../utils/sharedUtilities.js";
+import { School } from "./school.model.ts";
+import { Staff } from "../staff/staff.model.ts";
+import { salt } from "../../utils/sharedUtilities.ts";
 export const getEmployeeId = async (req) => {
   let token = req.slice(6);
   var decoded = jwt.decode(token);

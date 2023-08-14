@@ -1,8 +1,8 @@
-import { Staff } from "../staff/staff.model.js";
-import { customStatusMessage } from "../../utils/sharedUtilities.js";
-import { dashLogger } from "../../logs/logger.js";
-import { getEmployeeId } from "./Attendance.service.js";
-import { StudentAttendance } from "./Attendance.model.js";
+import { Staff } from "../staff/staff.model.ts";
+import { customStatusMessage } from "../../utils/sharedUtilities.ts";
+import { dashLogger } from "../../logs/logger.ts";
+import { getEmployeeId } from "./Attendance.service.ts";
+import { StudentAttendance } from "./Attendance.model.ts";
 export const LoggedStudents = async (req, res, next) => {
   const { firstName, Class, lastName } = req.body;
   // Make sure all names are in lower case to avoid collision

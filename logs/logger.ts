@@ -12,7 +12,7 @@ const dash = winston.createLogger({
   transports: [
     dashLog,
     new winston.transports.Console({
-      colorize: true,
+      // colorize: true,
     }),
   ],
 });

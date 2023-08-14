@@ -1,11 +1,11 @@
 import express from "express";
-import { connectDB } from "./config/db.js";
-import { errorHandler } from "./middleware/error.js";
-import schoolRouter from "./api/school/school.router.js";
-import StudentLoggRouter from "./api/StudentsAttendance/Attendance.router.js";
-import staffRouter from "./api/staff/staff.router.js";
-import StaffLoggRouter from "./api/StaffAttendance/Attendance.router.js";
-import StudentRouter from "./api/student/student.router.js";
+import { connectDB } from "./config/db.ts";
+import { errorHandler } from "./middleware/error.ts";
+import schoolRouter from "./api/school/school.router.ts";
+import StudentLoggRouter from "./api/StudentsAttendance/Attendance.router.ts";
+import staffRouter from "./api/staff/staff.router.ts";
+import StaffLoggRouter from "./api/StaffAttendance/Attendance.router.ts";
+import StudentRouter from "./api/student/student.router.ts";
 import logger from "morgan";
 import dotenv from "dotenv";
 import cors from "cors";
@@ -34,7 +34,7 @@ const server = app.listen(PORT, () =>
   console.log(`Sever running on port ${PORT}`)
 );
 
-process.on("unhandledRejection", (err, promise) => {
+process.on("unhandledRejection", (err: any, promise) => {
   console.log(`Logged Error: ${err.message}`);
   server.close(() => process.exit(1));
 });

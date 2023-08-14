@@ -1,11 +1,11 @@
-import { createNewStaff, getEmployeeId } from "./staff.service.js";
+import { createNewStaff, getEmployeeId } from "./staff.service.ts";
 import bcrypt from "bcryptjs";
-import sendEmail from "../../utils/sendEmail.js";
-import { salt } from "../../utils/sharedUtilities.js";
+import sendEmail from "../../utils/sendEmail.ts";
+import { salt } from "../../utils/sharedUtilities.ts";
 import jwt from "jsonwebtoken";
-import { customStatusMessage } from "../../utils/sharedUtilities.js";
-import { dashLogger } from "../../logs/logger.js";
-import { Staff } from "./staff.model.js";
+import { customStatusMessage } from "../../utils/sharedUtilities.ts";
+import { dashLogger } from "../../logs/logger.ts";
+import { Staff } from "./staff.model.ts";
 export const RegisterStaff = async (req, res, next) => {
   const { firstName, lastName, contact_Number, email, role, password } =
     req.body;
