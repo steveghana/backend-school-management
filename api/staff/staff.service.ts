@@ -1,9 +1,9 @@
 // const pool = require("../../config/database");
-import { Staff } from "./staff.model.js";
+import { Staff } from "./staff.model.ts";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import Shortid from "shortid";
-import { salt } from "../../utils/sharedUtilities.js";
+import { salt } from "../../utils/sharedUtilities.ts";
 export const createNewStaff = async (body, employeeId) => {
   let staff = await Staff.create({
     employeeId: Shortid(),

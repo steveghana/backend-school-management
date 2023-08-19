@@ -8,11 +8,11 @@ import {
   deleteStaff,
   ForgotPassword,
   ResetPassword,
-} from "./staff.controller.js";
+} from "./staff.controller.ts";
 import express from "express";
-import { staffValidator, staffLoginValidator } from "./staff.validator.js";
-import { validateMiddleware } from "../../middleware/validation.js";
-import { checkToken } from "../../middleware/checkToken.js";
+import { staffValidator, staffLoginValidator } from "./staff.validator.ts";
+import { validateMiddleware } from "../../middleware/validation.ts";
+import { checkToken } from "../../middleware/checkToken.ts";
 const staffRouter = express.Router();
 staffRouter.post(
   "/",

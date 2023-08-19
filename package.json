@@ -2,11 +2,11 @@
   "name": "backend-school-management",
   "version": "1.0.0",
   "description": "A backend for a school management system",
-  "main": "index.js",
+  "main": "server.ts",
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon server.js"
+    "start": "nodemon server.ts"
   },
   "repository": {
     "type": "git",
@@ -20,6 +20,7 @@
   "homepage": "https://github.com/afyacy/backend-school-management#readme",
   "dependencies": {
     "bcryptjs": "^2.4.3",
+    "chalk": "^4.1.2",
     "cors": "^2.8.5",
     "dotenv": "^16.0.1",
     "express": "^4.18.1",
@@ -29,11 +30,21 @@
     "mongoose": "^6.5.2",
     "morgan": "^1.10.0",
     "nodemailer": "^6.7.8",
+    "pg": "^8.7.1",
+    "pg-hstore": "^2.3.4",
     "shortid": "^2.2.16",
     "winston": "^3.8.1",
     "winston-daily-rotate-file": "^4.7.1"
   },
   "devDependencies": {
-    "nodemon": "^2.0.19"
+    "@types/express": "^4.17.13",
+    "@types/node": "^14.17.7",
+    "@types/nodemailer": "^6.4.4",
+    "@types/pg": "^7.14.11",
+    "@types/sequelize": "^4.28.10",
+    "@types/sqlite3": "^3.1.7",
+    "nodemon": "^2.0.19",
+    "ts-loader": "^8.3.0",
+    "ts-node": "^9.1.1"
   }
 }

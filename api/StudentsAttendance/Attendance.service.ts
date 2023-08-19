@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import { StudentAttendance } from "./Attendance.model.js";
+import { StudentAttendance } from "./Attendance.model.ts";
 export const getEmployeeId = async (req) => {
   let token = req.slice(6);
   var decoded = jwt.decode(token);

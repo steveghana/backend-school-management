@@ -1,9 +1,15 @@
-import { Student } from "./student.model.js";
-import { Staff } from "../staff/staff.model.js";
-import { customStatusMessage } from "../../utils/sharedUtilities.js";
-import { dashLogger } from "../../logs/logger.js";
-import { createNewStudent, getEmployeeId } from "./student.service.js";
-export const RegisterStudent = async (req, res, next) => {
+import { Student } from "./student.model.ts";
+import { Staff } from "../staff/staff.model.ts";
+import { customStatusMessage } from "../../utils/sharedUtilities.ts";
+import { NextFunction, Request, Response } from "express";
+
+import { dashLogger } from "../../logs/logger.ts";
+import { createNewStudent, getEmployeeId } from "./student.service.ts";
+export const RegisterStudent = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   const { firstName, Class, lastName, town, guardian, gender } = req.body;
   // Make sure all names are in lowerCase to avoid collision
   /* Problem!
@@ -66,7 +72,11 @@ export const RegisterStudent = async (req, res, next) => {
     next(error);
   }
 };
-export const getStudentInfos = async (req, res, next) => {
+export const getStudentInfos = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const allStudents = await Student.find({}); // Its better to filter on front end
     if (!allStudents.length) {
@@ -85,7 +95,11 @@ export const getStudentInfos = async (req, res, next) => {
     next(error);
   }
 };
-export const getStudentByUniqueCredentials = async (req, res, next) => {
+export const getStudentByUniqueCredentials = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   // const { firstName, lastName, Class } = req.body;
   try {
     const studentWithAdmissionNo = await Student.find({
@@ -110,7 +124,11 @@ export const getStudentByUniqueCredentials = async (req, res, next) => {
   }
 };
 
-export const updateStudentInfo = async (req, res, next) => {
+export const updateStudentInfo = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   const { id } = req.body;
   let token = req.get("authorization");
   let employeeId = await getEmployeeId(token);
@@ -194,7 +212,11 @@ export const updateStudentInfo = async (req, res, next) => {
   }
 };
 
-export const getStudentsByAdmissionClass = async (req, res, next) => {
+export const getStudentsByAdmissionClass = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   const { classOfStudents } = req.body;
 
   try {
@@ -218,7 +240,11 @@ export const getStudentsByAdmissionClass = async (req, res, next) => {
   }
 };
 
-export const deleteStudent = async (req, res, next) => {
+export const deleteStudent = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   let { body } = req;
   let token = req.get("authorization");
   let employeeId = await getEmployeeId(token);

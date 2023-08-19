@@ -1,5 +1,5 @@
 import { validationResult } from "express-validator";
-import { customStatusMessage } from "../utils/sharedUtilities.js";
+import { customStatusMessage } from "../utils/sharedUtilities.ts";
 //This catches errors from the validator
 export const validateMiddleware = (whatToValidate) => {
   try {

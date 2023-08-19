@@ -1,4 +1,4 @@
-import { Student } from "./student.model.js";
+import { Student } from "./student.model.ts";
 import shortid from "shortid";
 import jwt from "jsonwebtoken";
 export const createNewStudent = async (body, id) => {

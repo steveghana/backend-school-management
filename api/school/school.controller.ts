@@ -1,16 +1,16 @@
 "use strict";
-import { School, Section, Class } from "./school.model.js";
-import { Staff } from "../staff/staff.model.js";
+import { School, Section, Class } from "./school.model.ts";
+import { Staff } from "../staff/staff.model.ts";
 import {
   getEmployeeId,
   createNewStaff,
   creatNewSchool,
   mailData,
-} from "./school.service.js";
-import { customStatusMessage } from "../../utils/sharedUtilities.js";
+} from "./school.service.ts";
+import { customStatusMessage } from "../../utils/sharedUtilities.ts";
 import jwt from "jsonwebtoken";
-import sendEmail from "../../utils/sendEmail.js";
-import { dashLogger } from "../../logs/logger.js";
+import sendEmail from "../../utils/sendEmail.ts";
+import { dashLogger } from "../../logs/logger.ts";
 // Register New School
 export const RegisterNewSchool = async (req, res) => {
   const { email, access_code } = req.body;
@@ -87,7 +87,11 @@ export const RegisterNewSchool = async (req, res) => {
   }
 };
 
-export const getSchoolDetails = async (req, res, next) => {
+export const getSchoolDetails = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   // Get School Details
   try {
     const schoolData = await School.find();
@@ -110,7 +114,11 @@ export const getSchoolDetails = async (req, res, next) => {
 };
 
 // Create Section
-export const createSection = async (req, res, next) => {
+export const createSection = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   let token = req.get("authorization");
   const { section } = req.body;
   try {
@@ -149,7 +157,11 @@ export const createSection = async (req, res, next) => {
   }
 };
 // Update Section
-export const updateSection = async (req, res, next) => {
+export const updateSection = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   let { section } = req.body;
   let token = req.get("authorization");
   try {
@@ -185,7 +197,11 @@ export const updateSection = async (req, res, next) => {
 };
 
 // Get Sections
-export const getSections = async (req, res, next) => {
+export const getSections = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   const sections = await Section.find({});
   try {
     if (!sections.length) {
@@ -205,7 +221,11 @@ export const getSections = async (req, res, next) => {
 };
 
 // Create class
-export const createClass = async (req, res, next) => {
+export const createClass = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   let token = req.get("authorization");
   try {
     const employeeid = await getEmployeeId(token);

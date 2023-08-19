@@ -6,14 +6,14 @@ import {
   getSections,
   createClass,
   getClasses,
-} from "./school.controller.js";
-import { checkToken } from "../../middleware/checkToken.js";
+} from "./school.controller.ts";
+import { checkToken } from "../../middleware/checkToken.ts";
 import {
   schoolValidator,
   classValidator,
   sectionValidator,
-} from "./school.validator.js";
-import { validateMiddleware } from "../../middleware/validation.js";
+} from "./school.validator.ts";
+import { validateMiddleware } from "../../middleware/validation.ts";
 import express from "express";
 const schoolRouter = express.Router();
 //

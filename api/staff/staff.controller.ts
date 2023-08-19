@@ -1,12 +1,17 @@
-import { createNewStaff, getEmployeeId } from "./staff.service.js";
+import { createNewStaff, getEmployeeId } from "./staff.service.ts";
 import bcrypt from "bcryptjs";
-import sendEmail from "../../utils/sendEmail.js";
-import { salt } from "../../utils/sharedUtilities.js";
+import sendEmail from "../../utils/sendEmail.ts";
+import { salt } from "../../utils/sharedUtilities.ts";
 import jwt from "jsonwebtoken";
-import { customStatusMessage } from "../../utils/sharedUtilities.js";
-import { dashLogger } from "../../logs/logger.js";
-import { Staff } from "./staff.model.js";
-export const RegisterStaff = async (req, res, next) => {
+import { customStatusMessage } from "../../utils/sharedUtilities.ts";
+import { dashLogger } from "../../logs/logger.ts";
+import { Staff } from "./staff.model.ts";
+import { NextFunction, Request, Response } from "express";
+export const RegisterStaff = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   const { firstName, lastName, contact_Number, email, role, password } =
     req.body;
   let token = req.get("authorization");
@@ -63,7 +68,11 @@ export const RegisterStaff = async (req, res, next) => {
     next(error);
   }
 };
-export const getStaffInfos = async (req, res, next) => {
+export const getStaffInfos = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   let token = req.get("authorization");
 
   let employeeId = await getEmployeeId(token);
@@ -95,7 +104,11 @@ export const getStaffInfos = async (req, res, next) => {
     next(error);
   }
 };
-export const getStaffByEmployeeId = async (req, res, next) => {
+export const getStaffByEmployeeId = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   const { id } = req.params;
   try {
     const staffWithReqId = await Staff.findOne({ employeeId: id }); //Filter on frontend
@@ -119,7 +132,11 @@ export const getStaffByEmployeeId = async (req, res, next) => {
 };
 
 //Get individual StaffInfo only admin credentials needed
-export const getIndividualStaffInfo = async (req, res, next) => {
+export const getIndividualStaffInfo = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   let { firstname, lastName, role } = req.body;
   let token = req.get("authorization");
   let adminId = await getEmployeeId(token);
@@ -154,7 +171,11 @@ export const getIndividualStaffInfo = async (req, res, next) => {
   }
 };
 // Update Staff
-export const updateSection = async (req, res, next) => {
+export const updateSection = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   let { employeeId } = req.body;
   let token = req.get("authorization");
   try {
@@ -203,7 +224,11 @@ export const updateSection = async (req, res, next) => {
     next(error);
   }
 };
-export const deleteStaff = async (req, res, next) => {
+export const deleteStaff = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   let { body } = req;
   let token = req.get("authorization");
 
@@ -241,15 +266,19 @@ export const deleteStaff = async (req, res, next) => {
   }
 };
 //Authentication
-export const StaffLogin = async (req, res, next) => {
+export const StaffLogin = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   let { email, password } = req.body;
   try {
     let ExistinStaff = await Staff.findOne({ email });
     if (!ExistinStaff) {
-      customStatusMessage(res, 401, "Invalid email or password");
+      customStatusMessage(res, 401, 0, "Invalid email or password");
       return;
     }
-    const DoPasswordMatch = ExistinStaff.matchPassword(ExistinStaff.password);
+    // const DoPasswordMatch = ExistinStaff.matchPassword(ExistinStaff.password);
     if (!DoPasswordMatch) {
       customStatusMessage(res, 401, 0, "Invalid password");
       return;
@@ -280,7 +309,11 @@ export const StaffLogin = async (req, res, next) => {
   }
 };
 
-export const ForgotPassword = async (req, res, next) => {
+export const ForgotPassword = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   // Send Email to email provided but first check if Staff exists
   const { email } = req.body;
   try {
@@ -336,7 +369,11 @@ export const ForgotPassword = async (req, res, next) => {
   }
 };
 //Forgot password controller
-export const ResetPassword = async (req, res, next) => {
+export const ResetPassword = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   // Check if the getResetPassword token generated and added to field exist and is inded the user
   const resetPasswordToken = crypto
     .createHash("sha256")
