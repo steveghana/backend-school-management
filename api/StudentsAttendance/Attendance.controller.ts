@@ -1,9 +1,15 @@
 import { Staff } from "../staff/staff.model.ts";
 import { customStatusMessage } from "../../utils/sharedUtilities.ts";
 import { dashLogger } from "../../logs/logger.ts";
+import { NextFunction, Request, Response } from "express";
+
 import { getEmployeeId } from "./Attendance.service.ts";
 import { StudentAttendance } from "./Attendance.model.ts";
-export const LoggedStudents = async (req, res, next) => {
+export const LoggedStudents = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   const { firstName, Class, lastName } = req.body;
   // Make sure all names are in lower case to avoid collision
   //Send all students list in the form of an array at once
@@ -61,7 +67,11 @@ export const LoggedStudents = async (req, res, next) => {
     next(error);
   }
 };
-export const getStudentsLoggs = async (req, res, next) => {
+export const getStudentsLoggs = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const allStudentsLogs = await StudentAttendance.find({}); // Its better to filter on front end
     if (!allStudentsLogs.length) {

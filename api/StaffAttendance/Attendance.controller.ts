@@ -1,9 +1,15 @@
 import { Staff } from "../staff/staff.model.ts";
 import { customStatusMessage } from "../../utils/sharedUtilities.ts";
 import { dashLogger } from "../../logs/logger.ts";
+import { NextFunction, Request, Response } from "express";
+
 import { logStaffAttendance } from "./Attendance.service.ts";
 import { StaffAttendance } from "./Attendance.model.ts";
-export const LoggedStaff = async (req, res, next) => {
+export const LoggedStaff = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   const { firstName, Class, lastName, role } = req.body;
   // Make sure all names are in lower case to avoid collision
   try {
@@ -91,7 +97,11 @@ export const LoggedStaff = async (req, res, next) => {
     next(error);
   }
 };
-export const getStaffLoggs = async (req, res, next) => {
+export const getStaffLoggs = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const allStaffLoggs = await StaffAttendance.find({}); // Its better to filter on front end
     if (!allStaffLoggs.length) {

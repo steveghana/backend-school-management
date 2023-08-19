@@ -4,9 +4,9 @@ import { Response } from "express";
 export const customStatusMessage = (
   res: Response,
   statusCode: number,
-  success,
-  message,
-  data = null
+  success?: number,
+  message?: string,
+  data: any = null
 ) => {
   return res.status(statusCode).send({
     success,
