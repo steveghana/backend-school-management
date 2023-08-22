@@ -1,22 +1,22 @@
 import { DataTypes, Model, Sequelize } from "sequelize";
 
 // Define interface for the model attributes
-interface classAttributes {
-  class: string;
+interface ClassAttributes {
+  className: string;
   created_by: string;
 }
 
 // Define the Sequelize model
-class classModel extends Model<classAttributes> implements classAttributes {
-  public class!: string;
+class ClassModel extends Model<ClassAttributes> implements ClassAttributes {
+  public className!: string;
   public created_by!: string;
 }
 
 // Initialize the model
-export default (sequelize: Sequelize): typeof classModel => {
-  classModel.init(
+export default (sequelize: Sequelize) => {
+  ClassModel.init(
     {
-      class: {
+      className: {
         type: DataTypes.STRING,
         allowNull: false,
         validate: {
@@ -33,11 +33,11 @@ export default (sequelize: Sequelize): typeof classModel => {
     },
     {
       sequelize,
-      modelName: "class",
+      modelName: "ClassModel", // Adjust the model name
     }
   );
-  // classModel.
-  // classModel.belongsTo(models.user, { onDelete: 'CASCADE' });
-  // classModel.belongsTo(models.credentialToken, { onDelete: 'CASCADE' });
-  return classModel;
+
+  // Define associations here if needed
+
+  return ClassModel;
 };
