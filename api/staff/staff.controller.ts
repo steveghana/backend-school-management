@@ -18,8 +18,8 @@ export const RegisterStaff = async (
 
   let employeeId = await getEmployeeId(token);
   try {
-    const staff = await Staff.findOne({ employeeId }).select("role");
-    if (staff.role !== "Admin") {
+    const staff: Record<string, string> = await Staff.findOne({ employeeId }).select("role");
+    if ( staff.role !== "Admin") {
       customStatusMessage(
         res,
         401,

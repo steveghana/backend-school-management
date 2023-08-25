@@ -1,9 +1,12 @@
 import jwt from "jsonwebtoken";
-export const checkToken = (req, res, next) => {
+import { customStatusMessage } from "../utils/sharedUtilities";
+import { NextFunction, Request, Response } from "express";
+
+export const checkToken = (req: Request, res: Response, next: NextFunction) => {
   let token = req.get("authorization");
   if (token) {
     token = token.slice(6);
-    jwt.verify(token, process.env.SECRET, (err, decoded) => {
+    jwt.verify(token, process.env.SECRET || "", (err: any, decoded: any) => {
       if (err) {
         customStatusMessage(res, 401, 0, "Invalid token");
       } else {
