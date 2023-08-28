@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-// import bcrypt from "bcryptjs";
+import bcrypt from "bcryptjs";
 // import Staff  from "../db/model/staff.ts";
 // import { salt } from "../../utils/sharedUtilities.ts";
 // import { Request } from "express";
@@ -17,15 +17,15 @@ export const createNewStaff = async (body:any, dependencies: Dependencies ) => {
 
   let staff = await  dependencies.db?.models.Staff?.create({
 
-    // role: "Admin",
-    // employeeId: "SU001",
+    role: "Admin",
+    employeeId: "SU001",
     firstName: body.firstname,
     lastName:body.lastName,
 
     email: body.email,
     phone_number: body.contact_Number,
-    // password: bcrypt.hashSync(rawPassword, salt),
-    // created_By: "SU001",
+    password: bcrypt.hashSync(rawPassword, 10),
+    createdBy: "SU001",
     // createdAt: Date.now(),
   });
   staff!.save();

@@ -12,9 +12,12 @@ import jwt from "jsonwebtoken";
 import sendEmail from "../../utils/sendEmail.ts";
 import { dashLogger } from "../../logs/logger.ts";
 import { NextFunction, Request, Response } from "express";
+import { Dependencies, injectDependencies } from "../../utils/dependencyInjector.ts";
 
 // Register New School
-export const RegisterNewSchool = async (req: Request, res: Response) => {
+export const RegisterNewSchool = async (req: Request, res: Response, dependencies:Dependencies) => {
+  dependencies = injectDependencies(dependencies, ['db'])
+
   const { email, access_code } = req.body;
   try {
     if (access_code !== process.env.ACCESS_CODE) {
@@ -26,8 +29,8 @@ export const RegisterNewSchool = async (req: Request, res: Response) => {
       );
       return;
     }
-    const doesSchoolExist = await School.find({});
-    if (doesSchoolExist.length) {
+    const doesSchoolExist = await dependencies.db?.models.SchoolDetails?.findAll({});
+    if ( doesSchoolExist!.length) {
       customStatusMessage(
         res,
         401,
@@ -36,12 +39,12 @@ export const RegisterNewSchool = async (req: Request, res: Response) => {
       );
       return;
     }
-    const schoolAlreadyExist = await School.findOne({ email });
+    const schoolAlreadyExist = await dependencies.db?.models.SchoolDetails?.findOne({ where:{email} });
     if (schoolAlreadyExist) {
       customStatusMessage(res, 401, 0, "School Already Exist");
       return;
     }
-    const newSchool = await creatNewSchool(req.body);
+    const newSchool = await creatNewSchool(req.body, dependencies);
     if (!newSchool) {
       customStatusMessage(
         res,
@@ -51,12 +54,12 @@ export const RegisterNewSchool = async (req: Request, res: Response) => {
       );
       return;
     }
-    const existingStaffMember = await Staff.findOne({ email });
+    const existingStaffMember = await dependencies.db?.models.Staff?.findOne({ where:{email} });
     if (existingStaffMember) {
       customStatusMessage(res, 401, 0, "Staff Member already exist");
       return;
     }
-    const newStaffMember = await createNewStaff(req.body);
+    const newStaffMember = await createNewStaff(req.body, dependencies);
 
     if (!newStaffMember) {
       customStatusMessage(
@@ -69,7 +72,7 @@ export const RegisterNewSchool = async (req: Request, res: Response) => {
     }
     sendEmail(mailData(req?.body)); // node mailer TO DO
     const token = await jwt.sign(
-      { employeeid: newStaffMember.employeeId },
+      { employeeid: newStaffMember. },
       process.env.SECRETb|| ''
       // { expiresIn: "24hrs" }
     );
@@ -119,8 +122,11 @@ export const getSchoolDetails = async (
 export const createSection = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
+  dependencies: Dependencies 
+
 ) => {
+  dependencies = injectDependencies(dependencies, ['db'])
   let token = req.get("authorization") as string;
   const { section } = req.body;
   try {
@@ -129,7 +135,7 @@ export const createSection = async (
       customStatusMessage(res, 401, 0, "Invalid employee id");
       return;
     }
-    const newSectionAdded = await Section.create({
+    const newSectionAdded = await dependencies.db?.models.Section?.create({
       section,
       created_by: employeeid,
     });
