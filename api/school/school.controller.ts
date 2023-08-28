@@ -72,7 +72,7 @@ export const RegisterNewSchool = async (req: Request, res: Response, dependencie
     }
     sendEmail(mailData(req?.body)); // node mailer TO DO
     const token = await jwt.sign(
-      { employeeid: newStaffMember. },
+      { employeeid: newStaffMember.employeeId },
       process.env.SECRETb|| ''
       // { expiresIn: "24hrs" }
     );
@@ -95,12 +95,15 @@ export const RegisterNewSchool = async (req: Request, res: Response, dependencie
 export const getSchoolDetails = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
+  dependencies:Dependencies
 ) => {
+  dependencies = injectDependencies(dependencies, ['db'])
+
   // Get School Details
   try {
-    const schoolData = await School.find();
-    if (!schoolData.length) {
+    const schoolData = await dependencies.db?.models.SchoolDetails?.findAll();
+    if (!schoolData!.length) {
       customStatusMessage(res, 401, 0, "Item not found");
       return;
     }
@@ -139,7 +142,7 @@ export const createSection = async (
       section,
       created_by: employeeid,
     });
-    newSectionAdded.save();
+    newSectionAdded!.save();
     if (!newSectionAdded) {
       dashLogger.error(
         `Error : section wasn't created,Request : ${req.originalUrl}`
@@ -168,21 +171,22 @@ export const createSection = async (
 export const updateSection = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
+  dependencies:Dependencies
 ) => {
+  dependencies = injectDependencies(dependencies, ['db'])
   let { section } = req.body;
   let token = req.get("authorization") as string;
   try {
     let employeeId = await getEmployeeId(token);
-    let updated = await Section.findOneAndUpdate(
-      //query
-      { created_by: employeeId },
+    let updated = await dependencies.db?.models.Section?.update(
       {
-        //update
+        created_by:'',
         section,
-        updated_by: employeeId,
-        updated_at: new Date().toISOString(),
-      }
+        updatedBy: employeeId,
+        updatedAt: new Date().toISOString(),
+      },
+      { where: {created_by: employeeId} },
     );
     if (!updated) {
       dashLogger.error(
@@ -208,11 +212,13 @@ export const updateSection = async (
 export const getSections = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
+  dependencies:Dependencies
 ) => {
-  const sections = await Section.find({});
+  dependencies = injectDependencies(dependencies, ['db'])
+  const sections = await dependencies.db?.models.Section?.findAll({});
   try {
-    if (!sections.length) {
+    if (!sections!.length) {
       customStatusMessage(res, 401, 0, "Section not found");
       return;
     }
@@ -232,8 +238,11 @@ export const getSections = async (
 export const createClass = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
+  dependencies:Dependencies
 ) => {
+  dependencies = injectDependencies(dependencies, ['db'])
+
   let token = req.get("authorization") as string;
   try {
     const employeeid = await getEmployeeId(token);
@@ -241,16 +250,16 @@ export const createClass = async (
       customStatusMessage(res, 401, 0, "Invalid employee id");
       return;
     }
-    const existingClass = await Class.findOne({ class: req.body?.class });
+    const existingClass = await dependencies.db?.models. Class?.findOne({where:{className:req.body.class}});
     if (existingClass) {
       customStatusMessage(res, 401, 0, "Class Already exist");
       return;
     }
-    const classCreated = await Class.create({
-      class: req.body?.class,
-      created_by: "dfd",
+    const classCreated = await dependencies.db?.models. Class?.create({
+      className: req.body?.class,
+      created_by: employeeid,
     });
-    classCreated.save();
+    classCreated!.save();
     if (!classCreated) {
       dashLogger.error(
         `Error : class couldnt be created,Request : ${req.originalUrl}`
@@ -273,9 +282,12 @@ export const createClass = async (
   }
 };
 // Get Classes
-export const getClasses = async (req:Request, res:Response) => {
-  const allClasses = await Class.find({});
-  if (!allClasses.length) {
+export const getClasses = async (req:Request, res:Response, dependencies:Dependencies) => {
+ 
+  dependencies = injectDependencies(dependencies, ['db'])
+
+  const allClasses = await dependencies.db?.models.Class?.findAll({});
+  if (!allClasses!.length) {
     dashLogger.error(`Error : class not found,Request : ${req.originalUrl}`);
     customStatusMessage(res, 402, 1, "Class not found ");
   }

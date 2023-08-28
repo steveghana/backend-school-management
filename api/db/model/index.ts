@@ -7,7 +7,7 @@ import SchoolDetails from './schoolDetails';
 import Section from './section';
 import Socials from './socials';
 import Staff from './staff';
-
+import Class from './class'
 
 export default {
     SchoolDetails,
@@ -16,5 +16,5 @@ export default {
     Staff,
     authToken,
     credentialToken,
-   
+   Class
 };
