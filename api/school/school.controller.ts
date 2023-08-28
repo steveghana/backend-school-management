@@ -1,6 +1,6 @@
 "use strict";
-import { School, Section, Class } from "./school.model.ts";
-import { Staff } from "../staff/staff.model.ts";
+// import { School, Section, Class } from "./school.model.ts";
+// import { Staff } from "../staff/staff.model.ts";
 import {
   getEmployeeId,
   createNewStaff,
@@ -11,8 +11,10 @@ import { customStatusMessage } from "../../utils/sharedUtilities.ts";
 import jwt from "jsonwebtoken";
 import sendEmail from "../../utils/sendEmail.ts";
 import { dashLogger } from "../../logs/logger.ts";
+import { NextFunction, Request, Response } from "express";
+
 // Register New School
-export const RegisterNewSchool = async (req, res) => {
+export const RegisterNewSchool = async (req: Request, res: Response) => {
   const { email, access_code } = req.body;
   try {
     if (access_code !== process.env.ACCESS_CODE) {
@@ -68,7 +70,7 @@ export const RegisterNewSchool = async (req, res) => {
     sendEmail(mailData(req?.body)); // node mailer TO DO
     const token = await jwt.sign(
       { employeeid: newStaffMember.employeeId },
-      process.env.SECRET
+      process.env.SECRETb|| ''
       // { expiresIn: "24hrs" }
     );
     customStatusMessage(res, 200, 1, "Successfully registered", {
@@ -101,7 +103,7 @@ export const getSchoolDetails = async (
     }
     customStatusMessage(res, 200, 1, "Successful", schoolData);
     return;
-  } catch (error) {
+  } catch (error:any) {
     dashLogger.error(`Error : ${error.message},Request : ${req.originalUrl}`);
     customStatusMessage(
       res,
@@ -119,12 +121,12 @@ export const createSection = async (
   res: Response,
   next: NextFunction
 ) => {
-  let token = req.get("authorization");
+  let token = req.get("authorization") as string;
   const { section } = req.body;
   try {
     const employeeid = await getEmployeeId(token);
     if (!employeeid) {
-      customStatusMessage(401, 0, "Invalid employee id");
+      customStatusMessage(res, 401, 0, "Invalid employee id");
       return;
     }
     const newSectionAdded = await Section.create({
@@ -145,7 +147,7 @@ export const createSection = async (
       "Section succesfully created",
       newSectionAdded
     );
-  } catch (error) {
+  } catch (error:any) {
     console.log(error?.message);
     customStatusMessage(
       res,
@@ -163,7 +165,7 @@ export const updateSection = async (
   next: NextFunction
 ) => {
   let { section } = req.body;
-  let token = req.get("authorization");
+  let token = req.get("authorization") as string;
   try {
     let employeeId = await getEmployeeId(token);
     let updated = await Section.findOneAndUpdate(
@@ -226,7 +228,7 @@ export const createClass = async (
   res: Response,
   next: NextFunction
 ) => {
-  let token = req.get("authorization");
+  let token = req.get("authorization") as string;
   try {
     const employeeid = await getEmployeeId(token);
     if (!employeeid) {
@@ -265,7 +267,7 @@ export const createClass = async (
   }
 };
 // Get Classes
-export const getClasses = async (req, res) => {
+export const getClasses = async (req:Request, res:Response) => {
   const allClasses = await Class.find({});
   if (!allClasses.length) {
     dashLogger.error(`Error : class not found,Request : ${req.originalUrl}`);

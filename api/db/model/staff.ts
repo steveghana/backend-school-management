@@ -2,7 +2,6 @@ import { DataTypes, Model, Sequelize } from "sequelize";
 
 // Define the Sequelize model
 interface SchoolDetailsAttributes {
-  name: string;
   // address: string;
   phone_number: number;
   email: string;
@@ -15,7 +14,6 @@ class StaffDetails
   extends Model<SchoolDetailsAttributes>
   implements SchoolDetailsAttributes
 {
-  public name!: string;
   // public address!: string;
   public phone_number!: number;
   public email!: string;
@@ -28,10 +26,7 @@ class StaffDetails
 export default (sequelize: Sequelize) => {
   StaffDetails.init(
     {
-      name: {
-        type: DataTypes.STRING,
-        allowNull: false,
-      },
+     
       firstName: {
         type: DataTypes.STRING,
         allowNull: false,

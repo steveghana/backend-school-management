@@ -1,8 +1,6 @@
 import express from "express";
-import { connectDB } from "./config/db.ts";
-import { init as initDb } from "./db";
+import { init as initDb } from "./api/db/index.ts";
 import log from "./utils/log.ts";
-
 import { errorHandler } from "./middleware/error.ts";
 import schoolRouter from "./api/school/school.router.ts";
 import StudentLoggRouter from "./api/StudentsAttendance/Attendance.router.ts";
