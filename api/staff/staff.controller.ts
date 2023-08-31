@@ -5,20 +5,23 @@ import { salt } from "../../utils/sharedUtilities.ts";
 import jwt from "jsonwebtoken";
 import { customStatusMessage } from "../../utils/sharedUtilities.ts";
 import { dashLogger } from "../../logs/logger.ts";
-import { Staff } from "./staff.model.ts";
+// import { Staff } from "./staff.model.ts";
 import { NextFunction, Request, Response } from "express";
+import { Dependencies, injectDependencies } from "../../utils/dependencyInjector.ts";
 export const RegisterStaff = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
+  dependencies:Dependencies
 ) => {
+  dependencies = injectDependencies(dependencies, ['db'])
   const { firstName, lastName, contact_Number, email, role, password } =
     req.body;
   let token = req.get("authorization");
 
   let employeeId = await getEmployeeId(token);
   try {
-    const staff: Record<string, string> = await Staff.findOne({ employeeId }).select("role");
+    const staff  = await dependencies.db?.models.Staff?.findOne({where:{ employeeId} }) as unknown as Record<string, string>;
     if ( staff.role !== "Admin") {
       customStatusMessage(
         res,
@@ -28,13 +31,19 @@ export const RegisterStaff = async (
       );
       return;
     }
-    const uniqueEmail = await Staff.findOne({
+    const uniqueEmail = await dependencies.db?.models.Staff?.findOne({
+      where:
+    {
       email,
+
+    }
     });
-    const existingStaffMember = await Staff.findOne({
+    const existingStaffMember = await dependencies.db?.models.Staff?.findOne({ where:{
+
       firstName,
       lastName,
-      contact_Number,
+      phone_number:contact_Number
+    }
     });
     if (existingStaffMember || uniqueEmail) {
       customStatusMessage(res, 401, 0, "Staff Member already exist");
@@ -71,14 +80,17 @@ export const RegisterStaff = async (
 export const getStaffInfos = async (
   req: Request,
   res: Response,
-  next: NextFunction
-) => {
+  next: NextFunction,
+  dependencies:Dependencies
+  
+  ) => {
+  dependencies = injectDependencies(dependencies, ['db'])
   let token = req.get("authorization");
 
   let employeeId = await getEmployeeId(token);
   try {
-    const { role } = await Staff.findOne({ employeeId }).select("role");
-    if (role !== "Admin") {
+    const staff = await dependencies.db?.models.Staff?.findOne({ where: employeeId })
+    if (staff?.role !== "Admin") {
       customStatusMessage(
         res,
         401,
@@ -87,7 +99,7 @@ export const getStaffInfos = async (
       );
       return;
     }
-    const activeStaffMembers = await Staff.find({}); //Filter what you need on frontEnd
+    const activeStaffMembers = await dependencies.db?.models.Staff?.findAll({}); //Filter what you need on frontEnd
     if (!activeStaffMembers) {
       customStatusMessage(res, 401, 0, "Records not found");
       return;
@@ -107,11 +119,13 @@ export const getStaffInfos = async (
 export const getStaffByEmployeeId = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
+  dependencies:Dependencies
 ) => {
+  dependencies = injectDependencies(dependencies, ['db'])
   const { id } = req.params;
   try {
-    const staffWithReqId = await Staff.findOne({ employeeId: id }); //Filter on frontend
+    const staffWithReqId = await dependencies.db?.models.Staff?.findOne({where:{ employeeId: id} }); //Filter on frontend
     if (!staffWithReqId) {
       customStatusMessage(res, 401, 0, "Record not found");
       dashLogger.error(`Error : Record not found,Request : ${req.originalUrl}`);
@@ -119,7 +133,7 @@ export const getStaffByEmployeeId = async (
     }
     customStatusMessage(res, 200, 1, "Successful", staffWithReqId);
     return;
-  } catch (error) {
+  } catch (error:any) {
     dashLogger.error(`Error : ${error.message},Request : ${req.originalUrl}`);
     customStatusMessage(
       res,
@@ -135,14 +149,16 @@ export const getStaffByEmployeeId = async (
 export const getIndividualStaffInfo = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
+  dependencies :Dependencies
 ) => {
+dependencies = injectDependencies(dependencies, ['db'])
   let { firstname, lastName, role } = req.body;
   let token = req.get("authorization");
   let adminId = await getEmployeeId(token);
   try {
-    const isAdmin = await Staff.findOne({ employeeId: adminId }).select("role");
-    if (isAdmin.role !== "Admin") {
+    const isAdmin = await dependencies.db?.models.Staff?.findOne({ where: {employeeId: adminId} })
+    if (isAdmin!.role !== "Admin") {
       customStatusMessage(
         res,
         401,
@@ -151,7 +167,7 @@ export const getIndividualStaffInfo = async (
       );
       return;
     }
-    const staffWithReqInfo = await Staff.findOne({ firstname, lastName, role }); //Filter on frontend
+    const staffWithReqInfo = await dependencies.db?.models.Staff?.findOne({where:{  lastName, role, firstName: firstname} }); //Filter on frontend
     if (!staffWithReqInfo) {
       customStatusMessage(res, 401, 0, "Staff record not found");
       dashLogger.error(`Error : Record not found,Request : ${req.originalUrl}`);
@@ -159,7 +175,7 @@ export const getIndividualStaffInfo = async (
     }
     customStatusMessage(res, 200, 1, "Successful", staffWithReqInfo);
     return;
-  } catch (error) {
+  } catch (error:any) {
     dashLogger.error(`Error : ${error.message},Request : ${req.originalUrl}`);
     customStatusMessage(
       res,
@@ -174,8 +190,10 @@ export const getIndividualStaffInfo = async (
 export const updateSection = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
+  dependencies :Dependencies
 ) => {
+dependencies = injectDependencies()
   let { employeeId } = req.body;
   let token = req.get("authorization");
   try {
@@ -227,8 +245,10 @@ export const updateSection = async (
 export const deleteStaff = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
+  dependencies :Dependencies
 ) => {
+dependencies = injectDependencies()
   let { body } = req;
   let token = req.get("authorization");
 
@@ -269,8 +289,10 @@ export const deleteStaff = async (
 export const StaffLogin = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
+  dependencies :Dependencies
 ) => {
+dependencies = injectDependencies()
   let { email, password } = req.body;
   try {
     let ExistinStaff = await Staff.findOne({ email });
@@ -312,8 +334,10 @@ export const StaffLogin = async (
 export const ForgotPassword = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
+  dependencies :Dependencies
 ) => {
+dependencies = injectDependencies()
   // Send Email to email provided but first check if Staff exists
   const { email } = req.body;
   try {
@@ -372,8 +396,11 @@ export const ForgotPassword = async (
 export const ResetPassword = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
+  dependencies :Dependencies
 ) => {
+dependencies = injectDependencies(dependencies, ['db'])
+dependencies.db?.models
   // Check if the getResetPassword token generated and added to field exist and is inded the user
   const resetPasswordToken = crypto
     .createHash("sha256")
