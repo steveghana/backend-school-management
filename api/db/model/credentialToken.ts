@@ -1,15 +1,15 @@
-import { DataTypes, Sequelize, Optional } from 'sequelize';
+import { DataTypes, Sequelize, Optional, Model } from 'sequelize';
 import AssociableModel from '../associable';
 import { ICredentialToken } from '../../../types/credentialToken';
 
 class credentialToken
-    extends AssociableModel<ICredentialToken, Optional<ICredentialToken, 'id' | 'uuid' | 'isActive'>>
+    extends Model<ICredentialToken, Optional<ICredentialToken, 'id' | 'uuid' | 'isActive'>>
     implements ICredentialToken
 {
     public id!: number;
-    public uuid: string;
-    public isActive: boolean;
-    public userEmail: string;
+    public uuid!: string;
+    public isActive!: boolean;
+    public userEmail!: string;
 }
 
 export default (sequelize: Sequelize): typeof credentialToken => {
@@ -39,10 +39,10 @@ export default (sequelize: Sequelize): typeof credentialToken => {
         }
     );
 
-    credentialToken.associate = models => {
-        credentialToken.belongsTo(models.user, { onDelete: 'CASCADE' });
-        credentialToken.hasMany(models.authToken, { onDelete: 'CASCADE' });
-    };
+    // credentialToken.associate = models => {
+        // credentialToken.belongsTo(models.user, { onDelete: 'CASCADE' });
+        // credentialToken.hasMany(models.authToken, { onDelete: 'CASCADE' });
+    // };
 
     return credentialToken;
 };

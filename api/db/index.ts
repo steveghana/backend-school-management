@@ -18,13 +18,14 @@ interface DatabaseConfig extends Options {
     };
 }
 export type Context = {
-    sequelize: Sequelize | null;
+    sequelize: Sequelize ;
     models: {
         [key in keyof Partial<typeof models>]: ReturnType<typeof models[key]>;
     };
 };
 
 const globalContext: Context = {
+    //@ts-ignore
     sequelize: null,
     models: {},
 };
@@ -44,33 +45,7 @@ export async function init(port = NaN, context = globalContext): Promise<void> {
         },
     };
 
-    // const dbConfig: Options = {
-    //     dialect: 'postgres' as Dialect,
-    //     host: 'rogue.db.elephantsql.com',
-    //     port: 5432,
-    //     database: 'qdnphwip',
-    //     username: 'qdnphwip',
-    //     password: 'ruoRde-h10P5t1c209zVo5eAPVrlSAJo',
-    //     dialectModule: pg,
-    //     logging: sql => logger.log('db', sql),
-    //     define: {
-    //         freezeTableName: true,
-    //     },
-    // };
-
-    // const dbConfig: Options = {
-    //     dialect: 'postgres' as Dialect,
-    //     host: process.env.DB_HOST || 'containers-us-west-118.railway.app',
-    //     port: port || Number(process.env.DB_PORT) || 7703,
-    //     database: process.env.DB_NAME || 'railway',
-    //     username: process.env.DB_USER || 'postgres',
-    //     password: process.env.DB_PASS || 'wxmopfYDjkBn40HuSK4P',
-    //     dialectModule: pg,
-    //     logging: sql => logger.log('db', sql),
-    //     define: {
-    //         freezeTableName: true,
-    //     },
-    // };
+   
 
     context.sequelize = new Sequelize(dbConfig.database, dbConfig.username, dbConfig.password, dbConfig);
 
@@ -78,9 +53,9 @@ export async function init(port = NaN, context = globalContext): Promise<void> {
         const model = modelDef(context.sequelize);
         context.models[modelName as keyof typeof models] = model as any;
     });
-    Object.values(context.models).forEach(model => {
-        model.associate(context.models);
-    });
+    // Object.values(context.models).forEach(model => {
+    //     model.associate(context.models);
+    // });
 
     await context.sequelize.authenticate();
     if (process.env.NODE_ENV !== 'production') {
