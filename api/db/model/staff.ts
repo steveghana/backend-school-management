@@ -18,6 +18,7 @@ class StaffDetails
   implements SchoolDetailsAttributes
 {
   public employeeId!: string;
+  public role?:string;
   public phone_number!: number;
   public email!: string;
   public firstName!: string;
