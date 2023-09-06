@@ -1,8 +1,8 @@
-import { validationResult } from "express-validator";
+import { ValidationChain, validationResult } from "express-validator";
 import { customStatusMessage } from "../utils/sharedUtilities.ts";
 import { NextFunction, Request, Response } from "express";
 //This catches errors from the validator
-export const validateMiddleware = (whatToValidate: any[]) => {
+export const validateMiddleware = (whatToValidate: ValidationChain[]) => {
   try {
     return async (req: Request, res: Response, next: NextFunction) => {
       await Promise.all(whatToValidate.map((validate) => validate.run(req)));

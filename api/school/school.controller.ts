@@ -15,7 +15,7 @@ import { NextFunction, Request, Response } from "express";
 import { Dependencies, injectDependencies } from "../../utils/dependencyInjector.ts";
 
 // Register New School
-export const RegisterNewSchool = async (req: Request, res: Response, dependencies:Dependencies) => {
+export const RegisterNewSchool = async (req: Request, res: Response, dependencies:Dependencies = null) => {
   dependencies = injectDependencies(dependencies, ['db'])
 
   const { email, access_code } = req.body;
@@ -96,7 +96,7 @@ export const getSchoolDetails = async (
   req: Request,
   res: Response,
   next: NextFunction,
-  dependencies:Dependencies
+  dependencies:Dependencies = {}
 ) => {
   dependencies = injectDependencies(dependencies, ['db'])
 
@@ -126,7 +126,7 @@ export const createSection = async (
   req: Request,
   res: Response,
   next: NextFunction,
-  dependencies: Dependencies 
+  dependencies: Dependencies = null
 
 ) => {
   dependencies = injectDependencies(dependencies, ['db'])
@@ -172,7 +172,7 @@ export const updateSection = async (
   req: Request,
   res: Response,
   next: NextFunction,
-  dependencies:Dependencies
+  dependencies:Dependencies = null
 ) => {
   dependencies = injectDependencies(dependencies, ['db'])
   let { section } = req.body;
@@ -213,7 +213,7 @@ export const getSections = async (
   req: Request,
   res: Response,
   next: NextFunction,
-  dependencies:Dependencies
+  dependencies:Dependencies = null
 ) => {
   dependencies = injectDependencies(dependencies, ['db'])
   const sections = await dependencies.db?.models.Section?.findAll({});
@@ -239,7 +239,7 @@ export const createClass = async (
   req: Request,
   res: Response,
   next: NextFunction,
-  dependencies:Dependencies
+  dependencies?:Dependencies
 ) => {
   dependencies = injectDependencies(dependencies, ['db'])
 
@@ -282,7 +282,7 @@ export const createClass = async (
   }
 };
 // Get Classes
-export const getClasses = async (req:Request, res:Response, dependencies:Dependencies) => {
+export const getClasses = async (req:Request, res:Response, dependencies:Dependencies = null) => {
  
   dependencies = injectDependencies(dependencies, ['db'])
 

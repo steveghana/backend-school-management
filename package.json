@@ -46,6 +46,7 @@
     "@types/nodemailer": "^6.4.4",
     "@types/pg": "^7.14.11",
     "@types/sequelize": "^4.28.10",
+    "@types/shortid": "^0.0.29",
     "@types/sqlite3": "^3.1.7",
     "nodemon": "^2.0.19",
     "ts-loader": "^8.3.0",

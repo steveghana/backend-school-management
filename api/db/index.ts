@@ -25,7 +25,7 @@ export type Context = {
 };
 
 const globalContext: Context = {
-    //@ts-ignore
+ 
     sequelize: null,
     models: {},
 };

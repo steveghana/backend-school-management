@@ -1,6 +1,6 @@
 import nodemailer from "nodemailer";
 import { dashLogger } from "../logs/logger.ts";
-const sendEmail = (req: any) => {
+const sendEmail = (req: any):boolean => {
   const transporter = nodemailer.createTransport({
     service: process.env.EMAIL_SERVICE,
     auth: {
@@ -14,15 +14,18 @@ const sendEmail = (req: any) => {
     subject: req.subject,
     html: req.text,
   };
-  transporter.sendMail(mailOptions, function (err, info) {
+  transporter.sendMail(mailOptions,  (err, info)=> {
     if (err) {
       dashLogger.error(`Error : ${err.message},Request : ${req.originalUrl}`);
       console.log(err);
+      return false
     } else {
       // dashLogger.info(`Success : ${info.response},Request : SendMail`);
       console.log(info.response);
+      return true;
     }
   });
+  return true
 };
 
 export default sendEmail;

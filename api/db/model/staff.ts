@@ -11,6 +11,8 @@ interface SchoolDetailsAttributes {
   createdBy?:string;
   lastName: string;
   password:string;
+  resetPasswordToken?:string;
+  resetPasswordExpire?: Date;
 }
 
 class StaffDetails

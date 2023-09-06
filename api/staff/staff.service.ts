@@ -1,11 +1,13 @@
 // const pool = require("../../config/database");
-import { Staff } from "./staff.model.ts";
+// import { Staff } from "./staff.model.ts";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import Shortid from "shortid";
 import { salt } from "../../utils/sharedUtilities.ts";
-export const createNewStaff = async (body, employeeId) => {
-  let staff = await Staff.create({
+import { Dependencies } from "../../utils/dependencyInjector.ts";
+import { Request } from "express";
+export const createNewStaff = async (body: any, employeeId:string, dependencies:Dependencies = null ) => {
+  let staff = await dependencies.db.models.Staff.create({
     employeeId: Shortid(),
     created_By: employeeId,
     ...body,
@@ -15,8 +17,8 @@ export const createNewStaff = async (body, employeeId) => {
   staff.save();
   return staff;
 };
-export const getEmployeeId = async (req) => {
-  let token = req.slice(6);
+export const getEmployeeId = async (authToken:string) => {
+  let token = authToken.slice(6);
   var decoded = jwt.decode(token);
-  return decoded?.id;
+  return decoded;
 };
