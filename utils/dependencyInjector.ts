@@ -4,7 +4,6 @@ import config from '../config/config';
 
 export type Dependencies = Partial<{
     db: typeof db;
-  
     config: Partial<typeof config>;
 }>;
 

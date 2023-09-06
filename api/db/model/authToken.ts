@@ -1,16 +1,16 @@
-import { DataTypes, Sequelize, Optional, NOW } from 'sequelize';
+import { DataTypes, Sequelize, Optional, NOW, Model } from 'sequelize';
 import AssociableModel from '../associable';
 import { IAuthToken } from '../../../types/authToken';
 
 class authToken
-    extends AssociableModel<IAuthToken, Optional<IAuthToken, 'id' | 'isActive' | 'lastUsed' | 'createdAt'>>
+    extends Model <IAuthToken>
     implements IAuthToken
 {
     public id!: string;
-    public isActive: boolean;
-    public lastUsed: Date;
-    public userEmail: string;
-    public credentialTokenId: number;
+    public isActive!: boolean;
+    public lastUsed!: Date;
+    public userEmail!: string;
+    public credentialTokenId!: number;
 }
 
 export default (sequelize: Sequelize): typeof authToken => {
@@ -39,10 +39,10 @@ export default (sequelize: Sequelize): typeof authToken => {
         }
     );
 
-    authToken.associate = models => {
-        authToken.belongsTo(models.user, { onDelete: 'CASCADE' });
-        authToken.belongsTo(models.credentialToken, { onDelete: 'CASCADE' });
-    };
+    // authToken.associate = models => {
+        // authToken.belongsTo(models.user, { onDelete: 'CASCADE' });
+        // authToken.belongsTo(models.credentialToken, { onDelete: 'CASCADE' });
+    // };
 
     return authToken;
 };

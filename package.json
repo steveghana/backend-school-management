@@ -3,10 +3,10 @@
   "version": "1.0.0",
   "description": "A backend for a school management system",
   "main": "server.ts",
-  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon server.ts"
+    "start": "nodemon --exec ts-node server.ts",
+    "dev": "nodemon --exec ts-node server.ts"
   },
   "repository": {
     "type": "git",
@@ -27,7 +27,6 @@
     "express-session": "^1.17.3",
     "express-validator": "^6.14.2",
     "jsonwebtoken": "^8.5.1",
-    "mongoose": "^6.5.2",
     "morgan": "^1.10.0",
     "nodemailer": "^6.7.8",
     "pg": "^8.7.1",
@@ -47,6 +46,7 @@
     "@types/nodemailer": "^6.4.4",
     "@types/pg": "^7.14.11",
     "@types/sequelize": "^4.28.10",
+    "@types/shortid": "^0.0.29",
     "@types/sqlite3": "^3.1.7",
     "nodemon": "^2.0.19",
     "ts-loader": "^8.3.0",

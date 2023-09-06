@@ -1,24 +1,28 @@
 import { createNewStaff, getEmployeeId } from "./staff.service.ts";
 import bcrypt from "bcryptjs";
+import crypto from 'crypto'
 import sendEmail from "../../utils/sendEmail.ts";
 import { salt } from "../../utils/sharedUtilities.ts";
 import jwt from "jsonwebtoken";
 import { customStatusMessage } from "../../utils/sharedUtilities.ts";
 import { dashLogger } from "../../logs/logger.ts";
-import { Staff } from "./staff.model.ts";
+// import { Staff } from "./staff.model.ts";
 import { NextFunction, Request, Response } from "express";
+import { Dependencies, injectDependencies } from "../../utils/dependencyInjector.ts";
 export const RegisterStaff = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
+  dependencies:Dependencies = null
 ) => {
+  dependencies = injectDependencies(dependencies, ['db'])
   const { firstName, lastName, contact_Number, email, role, password } =
     req.body;
   let token = req.get("authorization");
 
-  let employeeId = await getEmployeeId(token);
+  let employeeId = await getEmployeeId(token) as string;
   try {
-    const staff: Record<string, string> = await Staff.findOne({ employeeId }).select("role");
+    const staff  = await dependencies.db?.models.Staff?.findOne({where:{ employeeId} }) as unknown as Record<string, string>;
     if ( staff.role !== "Admin") {
       customStatusMessage(
         res,
@@ -28,20 +32,26 @@ export const RegisterStaff = async (
       );
       return;
     }
-    const uniqueEmail = await Staff.findOne({
+    const uniqueEmail = await dependencies.db?.models.Staff?.findOne({
+      where:
+    {
       email,
+
+    }
     });
-    const existingStaffMember = await Staff.findOne({
+    const existingStaffMember = await dependencies.db?.models.Staff?.findOne({ where:{
+
       firstName,
       lastName,
-      contact_Number,
+      phone_number:contact_Number
+    }
     });
     if (existingStaffMember || uniqueEmail) {
       customStatusMessage(res, 401, 0, "Staff Member already exist");
       return;
     }
 
-    const newStaffMember = await createNewStaff(req.body, employeeId);
+    const newStaffMember = await createNewStaff(req.body, employeeId, dependencies);
     if (!newStaffMember) {
       customStatusMessage(
         res,
@@ -71,14 +81,17 @@ export const RegisterStaff = async (
 export const getStaffInfos = async (
   req: Request,
   res: Response,
-  next: NextFunction
-) => {
+  next: NextFunction,
+  dependencies:Dependencies = null 
+  
+  ) => {
+  dependencies = injectDependencies(dependencies, ['db'])
   let token = req.get("authorization");
 
   let employeeId = await getEmployeeId(token);
   try {
-    const { role } = await Staff.findOne({ employeeId }).select("role");
-    if (role !== "Admin") {
+    const staff = await dependencies.db?.models.Staff?.findOne({ where: {employeeId }})
+    if (staff?.role !== "Admin") {
       customStatusMessage(
         res,
         401,
@@ -87,7 +100,7 @@ export const getStaffInfos = async (
       );
       return;
     }
-    const activeStaffMembers = await Staff.find({}); //Filter what you need on frontEnd
+    const activeStaffMembers = await dependencies.db?.models.Staff?.findAll({}); //Filter what you need on frontEnd
     if (!activeStaffMembers) {
       customStatusMessage(res, 401, 0, "Records not found");
       return;
@@ -107,11 +120,13 @@ export const getStaffInfos = async (
 export const getStaffByEmployeeId = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
+  dependencies:Dependencies = null
 ) => {
+  dependencies = injectDependencies(dependencies, ['db'])
   const { id } = req.params;
   try {
-    const staffWithReqId = await Staff.findOne({ employeeId: id }); //Filter on frontend
+    const staffWithReqId = await dependencies.db?.models.Staff?.findOne({where:{ employeeId: id} }); //Filter on frontend
     if (!staffWithReqId) {
       customStatusMessage(res, 401, 0, "Record not found");
       dashLogger.error(`Error : Record not found,Request : ${req.originalUrl}`);
@@ -119,7 +134,7 @@ export const getStaffByEmployeeId = async (
     }
     customStatusMessage(res, 200, 1, "Successful", staffWithReqId);
     return;
-  } catch (error) {
+  } catch (error:any) {
     dashLogger.error(`Error : ${error.message},Request : ${req.originalUrl}`);
     customStatusMessage(
       res,
@@ -135,14 +150,16 @@ export const getStaffByEmployeeId = async (
 export const getIndividualStaffInfo = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
+  dependencies :Dependencies = null
 ) => {
+dependencies = injectDependencies(dependencies, ['db'])
   let { firstname, lastName, role } = req.body;
   let token = req.get("authorization");
   let adminId = await getEmployeeId(token);
   try {
-    const isAdmin = await Staff.findOne({ employeeId: adminId }).select("role");
-    if (isAdmin.role !== "Admin") {
+    const isAdmin = await dependencies.db?.models.Staff?.findOne({ where: {employeeId: adminId} })
+    if (isAdmin!.role !== "Admin") {
       customStatusMessage(
         res,
         401,
@@ -151,7 +168,7 @@ export const getIndividualStaffInfo = async (
       );
       return;
     }
-    const staffWithReqInfo = await Staff.findOne({ firstname, lastName, role }); //Filter on frontend
+    const staffWithReqInfo = await dependencies.db?.models.Staff?.findOne({where:{  lastName, role, firstName: firstname} }); //Filter on frontend
     if (!staffWithReqInfo) {
       customStatusMessage(res, 401, 0, "Staff record not found");
       dashLogger.error(`Error : Record not found,Request : ${req.originalUrl}`);
@@ -159,7 +176,7 @@ export const getIndividualStaffInfo = async (
     }
     customStatusMessage(res, 200, 1, "Successful", staffWithReqInfo);
     return;
-  } catch (error) {
+  } catch (error:any) {
     dashLogger.error(`Error : ${error.message},Request : ${req.originalUrl}`);
     customStatusMessage(
       res,
@@ -174,8 +191,10 @@ export const getIndividualStaffInfo = async (
 export const updateSection = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
+  dependencies :Dependencies = null
 ) => {
+dependencies = injectDependencies(dependencies, ['db'])
   let { employeeId } = req.body;
   let token = req.get("authorization");
   try {
@@ -184,8 +203,8 @@ export const updateSection = async (
      and find that specific employee for update
      */
     let employeeid = await getEmployeeId(token);
-    let whoIsUpdating = await Staff.findOne({ employeeid });
-    let updated = await Staff.findOneAndUpdate(
+    let whoIsUpdating = await dependencies.db.models.Staff.findOne({where: { employeeId} });
+    let updated = await dependencies.db.models.Staff.update(
       //query
       { employeeId },
       {
@@ -203,9 +222,10 @@ export const updateSection = async (
       customStatusMessage(res, 402, 0, "Couldn't updated section");
       return;
     }
-    const getUpdatedVersion = await Staff.findOne({ employeeId }).select(
-      "firstName lastName role employeeId"
-    );
+    const getUpdatedVersion = await dependencies.db.models.Staff.findOne({ where: {employeeId} })
+    // .select(
+    //   "firstName lastName role employeeId"
+    // );
     customStatusMessage(
       res,
       200,
@@ -227,14 +247,16 @@ export const updateSection = async (
 export const deleteStaff = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
+  dependencies :Dependencies = null
 ) => {
+dependencies = injectDependencies(dependencies, ['db'])
   let { body } = req;
   let token = req.get("authorization");
 
   let employeeId = await getEmployeeId(token);
   try {
-    const isAdmin = await Staff.findOne({ employeeId }).select("role");
+    const isAdmin = await dependencies.db.models.Staff.findOne({where: {employeeId},  });
     if (isAdmin.role !== "Admin") {
       customStatusMessage(
         res,
@@ -244,7 +266,7 @@ export const deleteStaff = async (
       );
       return;
     }
-    const staffWithReqInfo = await Staff.findOneAndDelete({
+    const staffWithReqInfo = await dependencies.db.models.Staff.destroy({
       ...body,
     });
     if (!staffWithReqInfo) {
@@ -269,20 +291,23 @@ export const deleteStaff = async (
 export const StaffLogin = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
+  dependencies :Dependencies = null
 ) => {
-  let { email, password } = req.body;
+dependencies = injectDependencies(dependencies, ['db'])
+  let { email } = req.body;
   try {
-    let ExistinStaff = await Staff.findOne({ email });
+    let ExistinStaff = await dependencies.db.models.Staff.findOne({where: {email} });
     if (!ExistinStaff) {
       customStatusMessage(res, 401, 0, "Invalid email or password");
       return;
     }
     // const DoPasswordMatch = ExistinStaff.matchPassword(ExistinStaff.password);
-    if (!DoPasswordMatch) {
-      customStatusMessage(res, 401, 0, "Invalid password");
-      return;
-    }
+    //To do; change password
+    // if (!DoPasswordMatch) {
+    //   customStatusMessage(res, 401, 0, "Invalid password");
+    //   return;
+    // }
     console.log(ExistinStaff.employeeId);
     const token = await jwt.sign(
       { id: ExistinStaff?.employeeId },
@@ -312,12 +337,14 @@ export const StaffLogin = async (
 export const ForgotPassword = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
+  dependencies :Dependencies = null
 ) => {
+dependencies = injectDependencies(dependencies, ['db'])
   // Send Email to email provided but first check if Staff exists
   const { email } = req.body;
   try {
-    const staff = await Staff.findOne({ email });
+    const staff = await dependencies.db.models.Staff.findOne({where: {email} });
     if (!staff) {
       customStatusMessage(
         res,
@@ -328,10 +355,10 @@ export const ForgotPassword = async (
       return;
     }
     // Reset Token Gen and add to database hashed (private) version of token
-    const resetToken = staff.getResetPasswordToken();
+    // const resetToken = staff.getResetPasswordToken();
     await staff.save();
     // Create reset url to email to provided email
-    const resetUrl = `http://localhost:3000/passwordreset/${resetToken}`;
+    const resetUrl = `http://localhost:3000/passwordreset/${'resetToken'}`;
     // HTML Message
     const message = `
       <h1>${staff.firstName} have requested a password reset</h1>
@@ -350,14 +377,14 @@ export const ForgotPassword = async (
         0,
         "Couldnt send email, please try again later"
       );
-      staff.resetPasswordToken = undefined;
-      staff.resetPasswordExpire = undefined;
+      // staff.resetPasswordToken = undefined;
+      // staff.resetPasswordExpire = undefined;
       await staff.save();
       return;
     }
     customStatusMessage(res, 200, 1, "Email Sent");
     return;
-  } catch (err) {
+  } catch (error) {
     dashLogger.error(`Error : ${error.message},Request : ${req.originalUrl}`);
     customStatusMessage(
       res,
@@ -365,32 +392,38 @@ export const ForgotPassword = async (
       0,
       "Database connection error || Data already exists"
     );
-    next(err);
+    next(error);
   }
 };
 //Forgot password controller
 export const ResetPassword = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
+  dependencies :Dependencies = null
 ) => {
+dependencies = injectDependencies(dependencies, ['db'])
+dependencies.db?.models
   // Check if the getResetPassword token generated and added to field exist and is inded the user
   const resetPasswordToken = crypto
     .createHash("sha256")
     .update(req.params.resetToken)
     .digest("hex");
+    
   try {
-    const staff = await Staff.findOne({
+    const staff = await dependencies.db.models.Staff.findOne({ where : {
+
       resetPasswordToken,
       resetPasswordExpire: { $gt: Date.now() },
+    }
     });
     if (!staff) {
       customStatusMessage(res, 401, 0, "Invalid token");
       return;
     }
     staff.password = bcrypt.hashSync(req.body.password, salt);
-    staff.resetPasswordToken = undefined;
-    staff.resetPasswordExpire = undefined;
+    // staff.resetPasswordToken = undefined;
+    // staff.resetPasswordExpire = undefined;
 
     await staff.save();
     const token = await jwt.sign(
@@ -407,6 +440,6 @@ export const ResetPassword = async (
       0,
       "Database connection error || Data already exists"
     );
-    next(err);
+    next(error);
   }
 };

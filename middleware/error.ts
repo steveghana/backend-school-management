@@ -1,22 +1,24 @@
-export const errorHandler = (err, req, res, next) => {
-  let error = { ...err };
+// import { NextFunction, Request, Response } from "express";
 
-  error.message = err.message;
+// export const errorHandler = (err:any, req:Request, res:Response, next:NextFunction) => {
+//   let error = { ...err };
 
-  if (err.code === 11000) {
-    const message = `Duplicate Field value entered`;
-    error = res.status(400).json({ message });
-  }
+//   error.message = err.message;
 
-  if (err.name === "ValidationError") {
-    const message = Object.values(err.errors).map((val) => val.message);
-    error = res.status(400).json({ message });
-  }
+//   if (err.code === 11000) {
+//     const message = `Duplicate Field value entered`;
+//     error = res.status(400).json({ message });
+//   }
 
-  console.log(error.message);
+//   if (err.name === "ValidationError") {
+//     const message = Object.values(err.errors).map((val) => val.message);
+//     error = res.status(400).json({ message });
+//   }
 
-  res.status(error.statusCode || 500).json({
-    success: false,
-    error: error.message || "Server Error",
-  });
-};
+//   console.log(error.message);
+
+//   res.status(error.statusCode || 500).json({
+//     success: false,
+//     error: error.message || "Server Error",
+//   });
+// };
